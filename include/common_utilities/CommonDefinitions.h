@@ -57,6 +57,7 @@ enum VISUALIZATION{
     Mesh,
     StateMachineParameters,
     ForceTorqueSensors,
+		IMUs,
     InteractiveMarkers
 };
 
