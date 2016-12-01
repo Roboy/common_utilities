@@ -52,6 +52,7 @@ enum LEG_STATE{
 enum VISUALIZATION{
     Tendon,
     COM,
+		EstimatedCOM,
     Forces,
     MomentArm,
     Mesh,
