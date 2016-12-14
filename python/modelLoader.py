@@ -84,13 +84,15 @@ class OBJECT_OT_Button(bpy.types.Operator):
     def execute(self, context):
         global collisionPose
         root = xml.etree.ElementTree.parse(sdf_file).getroot()
+        #read in poses of links
         poses = dict()
         getnamefrom = 'link'
         if collisionPose:
             getnamefrom = 'collision'
-        for link in root.iter(getnamefrom):
+        #for link in root.iter(getnamefrom):
+        for link in root.findall('./model/link'):
             pose = list()
-            skipPose = True
+            #skipPose = True
             for posestring in link.iter('pose'):
                 pose.clear()
                 i = 0
@@ -100,35 +102,39 @@ class OBJECT_OT_Button(bpy.types.Operator):
                 if i != 6:
                     print("ERROR reading pose of " + link.attrib['name'] + " , expected 6 values xyzrpy")
                     continue
-                # if collisionPose and skipPose:
-                #     skipPose = False
+                # if collisionPose and #skipPose:
+                #     #skipPose = False
                 #     continue
                 # else:
                 break
-
-            print(link.attrib['name'] + " with pose: " + str(pose))
-            poses[link.attrib['name']] = pose
+            name = link.attrib['name']
+            if collisionPose:
+                name = name[:-10]
+            print(name + " with pose: " + str(pose))
+            poses[name] = pose
         i = 0
-        poses2 = dict()
+        #poses2 = dict()
         for mesh in poses.keys():
             print("loading " + mesh)
-            meshname = mesh
-            if mesh.endswith('.dae'):
-                bpy.ops.wm.collada_import(filepath=mesh_dir+mesh)
+            #meshname = mesh
+            #if mesh.endswith('.dae'):
+                #bpy.ops.wm.collada_import(filepath=mesh_dir+mesh)
                 # bpy.ops.import_mesh.stl(files=[{"name": mesh }], directory=mesh_dir)
-                meshname = os.path.splitext(meshname)[0]
-                bpy.data.objects['node'].name = meshname
-                poses2[meshname] = poses[mesh]
-            else:
-                bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}], directory=mesh_dir)
+                #meshname = os.path.splitext(meshname)[0]
+                #bpy.data.objects['node'].name = meshname
+                #poses2[meshname] = poses[mesh]
+            #else:
+            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}], directory=mesh_dir)
 
-        poses = poses2
+        #poses = poses2
         for obj in bpy.data.objects:
-            if obj.name in poses:
-                print("setting pose of " + obj.name + " : " + str((poses[obj.name][0], poses[obj.name][1], poses[obj.name][2])) + str(
-                    (poses[obj.name][3], poses[obj.name][4], poses[obj.name][5])))
-                obj.location = (poses[obj.name][0], poses[obj.name][1], poses[obj.name][2])
-                obj.rotation_euler = (poses[obj.name][3], poses[obj.name][4], poses[obj.name][5])
+            name = obj.name.replace(" ","_")
+            if name in poses:
+                print(str(poses[name]))
+                print("setting pose of " + name + " : " + str((poses[name][0], poses[name][1], poses[name][2])) + str(
+                    (poses[name][3], poses[name][4], poses[name][5])))
+                obj.location = (poses[name][0], poses[name][1], poses[name][2])
+                obj.rotation_euler = (poses[name][3], poses[name][4], poses[name][5])
                 i += 1
         return {'FINISHED'}
 
