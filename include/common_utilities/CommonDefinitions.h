@@ -59,7 +59,8 @@ enum VISUALIZATION{
     StateMachineParameters,
     ForceTorqueSensors,
 		IMUs,
-    InteractiveMarkers
+    InteractiveMarkers,
+		IMUFiltering
 };
 
 enum ABORTION{
