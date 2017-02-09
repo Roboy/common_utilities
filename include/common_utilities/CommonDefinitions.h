@@ -67,9 +67,10 @@ enum VISUALIZATION{
     Mesh,
     StateMachineParameters,
     ForceTorqueSensors,
-		IMUs,
+    IMUs,
+    StickFigure,
     InteractiveMarkers,
-		IMUFiltering
+    IMUFiltering
 };
 
 enum ABORTION{
