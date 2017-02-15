@@ -68,7 +68,7 @@ enum VISUALIZATION{
     StateMachineParameters,
     ForceTorqueSensors,
     IMUs,
-    StickFigure,
+    CollisionModel,
     InteractiveMarkers,
     IMUFiltering
 };
