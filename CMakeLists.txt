@@ -24,6 +24,8 @@ add_message_files(
         Steer.msg
         Status.msg
         Trajectory.msg
+        MuscleState.msg
+        ExternalForce.msg
 )
 
 add_service_files(
