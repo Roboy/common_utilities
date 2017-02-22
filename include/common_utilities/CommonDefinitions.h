@@ -86,8 +86,7 @@ enum SIMULATIONCONTROL{
     Slow_Motion,
     UpdateInteractiveMarker,
 		StartRecording,
-		StopRecording,
-		ResetAndStartRecording
+		StopRecording
 };
 
 enum{
