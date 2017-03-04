@@ -4,8 +4,8 @@ from os.path import isfile, join
 argv = sys.argv
 argv = argv[argv.index("--") + 1:]  # get all args after "--"
 
-if len(argv) != 3 & isfile(argv[0]) == False:
-  print('too few arguments, USAGE: path/to/dae outputpath/to/dae ratio[0-1]')
+if len(argv) < 3 & isfile(argv[0]) == False:
+  print('too few arguments, USAGE: path/to/stl outputpath/to/stl ratio[0-1] scale[0.01-1000]')
 else:
   print('input file: ' + argv[0])
   print('ouput file: ' + argv[1])
@@ -29,7 +29,7 @@ else:
   for item in bpy.data.meshes:
     bpy.data.meshes.remove(item)
 
-  bpy.ops.wm.collada_import(filepath=argv[0])
+  bpy.ops.import_mesh.stl(filepath=argv[0])
 
   bpy.ops.object.mode_set(mode='OBJECT')
   bpy.ops.object.mode_set(mode='EDIT')
@@ -46,4 +46,4 @@ else:
   bpy.data.objects['node'].modifiers["Decimate"].ratio=float(argv[2])
   bpy.ops.object.modifier_apply(modifier='DECIMATE')
 
-  bpy.ops.wm.collada_export(filepath=argv[1], selected=True, apply_modifiers=True, triangulate=True )
+  bpy.ops.export_mesh.stl(filepath=argv[1], check_existing=True, use_mesh_modifiers=True, global_scale=float(argv[3]), use_selection=True )
