@@ -57,8 +57,8 @@ class ViaPointInfoOperator(bpy.types.Operator):
 #    ui
 # ------------------------------------------------------------------------
 
-sdf_file = "/home/letrend/workspace/roboy-ros-control/src/roboy_models/legs_with_upper_body/model.sdf"
-stl_dir = "/home/letrend/workspace/roboy-ros-control/src/roboy_models/legs_with_upper_body/cad"
+sdf_file = "/home/roboy/PaBiRoboy/model.sdf"
+stl_dir = "/home/roboy/PaBiRoboy/meshes"
 
 class FilePath(PropertyGroup):
     sdf_file = StringProperty(
@@ -183,7 +183,7 @@ class OBJECT_OT_Button(bpy.types.Operator):
         global tree
         global viaPoints
         global current_viaPoint
-        viaPoints[current_viaPoint].text = "%f %f %f" % (cursor.x, cursor.y, cursor.z)
+        viaPoints[current_viaPoint].text = "%f %f %f" % (cursor.x/1000, cursor.y/1000, cursor.z/1000)
         tree.write(sdf_file)
         return {'FINISHED'}
 # ------------------------------------------------------------------------
