@@ -17,8 +17,6 @@ add_message_files(
         FILES
         ControllerRequest.msg
         ControllerState.msg
-        MotorStatus.msg
-        MotorCommand.msg
         Pose.msg
         RoboyState.msg
         Steer.msg
@@ -26,6 +24,12 @@ add_message_files(
         Trajectory.msg
         MuscleState.msg
         ExternalForce.msg
+        MotorStatus.msg
+        MotorConfig.msg
+        MotorRecordConfig.msg
+        MotorRecord.msg
+        MotorCommand.msg
+        MotorTrajectoryControl.msg
 )
 
 add_service_files(

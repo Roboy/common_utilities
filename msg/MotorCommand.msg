@@ -1,2 +1,2 @@
-int32 id
-float32 setpoint
+uint8[] motors
+int32[] setPoints
