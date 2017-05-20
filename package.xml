@@ -6,7 +6,8 @@
   <maintainer email="simon.trendel@tum.de">Simon Trendel</maintainer>
   <license>BSD-3</license>
 
-  <!-- The export tag contains other, unspecified, tags -->
+  <buildtool_depend>catkin</buildtool_depend>  
+<!-- The export tag contains other, unspecified, tags -->
   <export>
   </export>
 </package>
