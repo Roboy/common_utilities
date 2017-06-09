@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
     uint32_t client_IP, host_IP, broadcastIP;
 
     // create the IP broadcast Socket
-    UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(client_IP, BROADCAST_PORT, false));
+    UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(client_IP, BROADCAST_PORT));
 
     switch(argc){
         case 1:
@@ -19,13 +19,13 @@ int main(int argc, char *argv[]){
             ROS_INFO("Starting IP broadcaster with Host IP: %s", receiver_socket->myIP.second.c_str());
             break;
         case 2:
-            if(!receiver_socket->convertText2Byte(argv[2], &broadcastIP)) {
+            if(!receiver_socket->convertText2Byte(argv[1], &broadcastIP)) {
                 ROS_ERROR(
                         "holy shit, I was not able to convert your broadcast IP, are you sure it is an IP like 192.168.0.255 ??!!!");
                 return -2;
             }
             receiver_socket.reset();
-            receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, broadcastIP, false));
+            receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, broadcastIP));
             ROS_INFO("Starting IP receiver with Host IP: %s:%d and broadcastIP: %s", argv[1],BROADCAST_PORT, argv[2]);
             break;
         default:
