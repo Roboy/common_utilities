@@ -1,13 +1,6 @@
 #include "common_utilities/UDPSocket.hpp"
 
 int main(int argc, char *argv[]){
-    ros::init(argc, argv, "IPbroadcaster" );
-
-    ros::NodeHandle nh;
-
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
-
     // create the IP broadcast Socket
     UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT));
 
@@ -41,10 +34,9 @@ int main(int argc, char *argv[]){
             return -1;
     }
 
-    ros::Rate rate(1);
-    while(ros::ok()){
-        ROS_INFO_THROTTLE(10,"broadcasting HOST IP");
+    while(true){
+        ROS_INFO("broadcasting HOST IP");
         broadcast_socket->broadcastHostIP();
-        rate.sleep();
+        usleep(5000000);
     }
 }
