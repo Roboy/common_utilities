@@ -9,8 +9,8 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/root/workspace/test_ws/devel/lib/common_utilities"
-cmd="./IPbroadcaster"
+dir=""
+cmd="IPbroadcaster"
 user=""
 
 name=`basename $0`
