@@ -35,13 +35,14 @@ int main(int argc, char *argv[]){
     }
 
     ros::Rate rate(1);
+    char hostname[20];
     while(ros::ok()){
         ROS_INFO_THROTTLE(10,"listening for HOST IP");
-        host_IP = receiver_socket->receiveHostIP();
+        host_IP = receiver_socket->receiveHostIP(hostname);
         if(host_IP!=0){
             char IP[4];
             receiver_socket->convertByte2Text(host_IP,IP);
-            ROS_INFO("Received HOST IP: %s",IP);
+            ROS_INFO("Received HOST IP: %s from %s",IP, hostname);
         }
         rate.sleep();
     }

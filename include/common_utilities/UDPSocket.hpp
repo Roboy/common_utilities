@@ -79,7 +79,7 @@ public:
      * Receive ROS master IP
      * @return IP
      */
-    uint32_t receiveHostIP();
+    uint32_t receiveHostIP(char *hostname);
 
     /**
       * Broadcast ROS master IP
