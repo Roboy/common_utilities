@@ -169,6 +169,9 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bo
 }
 
 UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
+    string myIP;
+    whatsMyIP(myIP);
+
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_port = htons(port);
     char br_IP[16];

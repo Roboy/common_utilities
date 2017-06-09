@@ -72,7 +72,7 @@ public:
      * @param broadcastIP use this broadcast IP
      * @param broadcaster if true this binds the port to the broadcast port
      */
-    UDPSocket(int port, int broadcastIP=0xffffffff, bool broadcaster=true);
+    UDPSocket(int port, int broadcastIP=0xffffffff, bool broadcaster=false);
     ~UDPSocket();
 
     /**

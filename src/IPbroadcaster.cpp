@@ -9,7 +9,7 @@ int main(int argc, char *argv[]){
     spinner.start();
 
     // create the IP broadcast Socket
-    UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, false));
+    UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT));
 
     uint32_t host_IP, broadcastIP;
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
                 return -2;
             }
             broadcast_socket.reset();
-            broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, broadcastIP, false));
+            broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, broadcastIP));
             ROS_INFO("Starting IP broadcaster with Host IP: %s", argv[1]);
             break;
         default:
