@@ -18,12 +18,7 @@ int main(int argc, char *argv[]){
             host_IP = receiver_socket->myIP.first;
             ROS_INFO("Starting IP broadcaster with Host IP: %s", receiver_socket->myIP.second.c_str());
             break;
-        case 3:
-            if(!receiver_socket->convertText2Byte(argv[1], &client_IP)) {
-                ROS_ERROR(
-                        "holy shit, I was not able to convert your IP, are you sure it is an IP like 192.168.0.100 ??!!!");
-                return -2;
-            }
+        case 2:
             if(!receiver_socket->convertText2Byte(argv[2], &broadcastIP)) {
                 ROS_ERROR(
                         "holy shit, I was not able to convert your broadcast IP, are you sure it is an IP like 192.168.0.255 ??!!!");
@@ -34,9 +29,8 @@ int main(int argc, char *argv[]){
             ROS_INFO("Starting IP receiver with Host IP: %s:%d and broadcastIP: %s", argv[1],BROADCAST_PORT, argv[2]);
             break;
         default:
-            ROS_ERROR("USAGE: rosrun common_utilities IPreceiver [192.168.0.100] [192.168.0.255]");
-            ROS_INFO("The IP and broadcast IP is optional. If you dont supply it, I will try to guess your IP and "
-                             "use 255.255.255.255 as the broadcast IP");
+            ROS_ERROR("USAGE: rosrun common_utilities IPreceiver 192.168.0.255");
+            ROS_INFO("Please supply broadcast IP");
             return -1;
     }
 
