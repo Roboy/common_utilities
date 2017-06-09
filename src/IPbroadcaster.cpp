@@ -1,6 +1,13 @@
 #include "common_utilities/UDPSocket.hpp"
 
 int main(int argc, char *argv[]){
+
+    char hostname[20];
+    /* Open the command for reading. */
+    FILE *fp = popen("hostname", "r");
+
+    fgets(hostname, sizeof(hostname)-1, fp);
+
     // create the IP broadcast Socket
     UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT));
 
@@ -36,7 +43,7 @@ int main(int argc, char *argv[]){
 
     while(true){
         ROS_INFO("broadcasting HOST IP");
-        broadcast_socket->broadcastHostIP();
+        broadcast_socket->broadcastHostIP(hostname);
         usleep(5000000);
     }
 }

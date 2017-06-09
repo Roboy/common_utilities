@@ -234,9 +234,10 @@ bool UDPSocket::broadcastHostIP(uint32_t IP){
     return broadcastUDP();
 }
 
-bool UDPSocket::broadcastHostIP(){
-    numbytes = 4;
+bool UDPSocket::broadcastHostIP(char *hostname){
+    numbytes = 24;
     memcpy(buf,&myIP.first,sizeof(myIP.first));
+    memcpy(&buf[4],hostname,20);
     return broadcastUDP();
 }
 

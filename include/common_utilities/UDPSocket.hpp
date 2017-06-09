@@ -89,9 +89,10 @@ public:
     bool broadcastHostIP(uint32_t IP);
     /**
       * Broadcast ROS master IP of the machine this node was run on
+      * @param hostname 
       * @return successfully broadcasted
       */
-    bool broadcastHostIP();
+    bool broadcastHostIP(char* hostname);
 
     /**
      * Converts a byte internet address to a human readable address
