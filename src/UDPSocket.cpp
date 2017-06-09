@@ -216,13 +216,14 @@ UDPSocket::~UDPSocket() {
     close(sockfd);
 }
 
-uint32_t UDPSocket::receiveHostIP(){
-    if(receiveUDPFromClient() && numbytes == 4){
+uint32_t UDPSocket::receiveHostIP(char *hostname){
+    if(receiveUDPFromClient() && numbytes == 24){
         uint32_t IP = (uint32_t)((uint8_t)buf[3] << 24 | (uint8_t)buf[2] << 16 | (uint8_t)buf[1] << 8 | (uint8_t)buf[0]);
+        memcpy(hostname,&buf[4],20);
         return IP;
-    }else if(numbytes < 4){
+    }else if(numbytes < 24){
         ROS_DEBUG( "received more bytes than expected %d", numbytes);
-    }else if(numbytes > 4) {
+    }else if(numbytes > 24) {
         ROS_DEBUG("received less bytes than expected  %d", numbytes);
     }
     return 0;
