@@ -13,6 +13,11 @@ SET(CMAKE_BUILD_TYPE Debug)
 find_package(catkin REQUIRED roscpp std_msgs)
 catkin_package(CATKIN_DEPENDS message_runtime)
 
+# Eigen
+find_package(PkgConfig REQUIRED )
+pkg_check_modules(EIGEN3 REQUIRED eigen3)
+include_directories(${EIGEN3_INCLUDE_DIRS})
+
 include_directories( include ${catkin_INCLUDE_DIRS} )
 
 #==============================================================================
@@ -23,6 +28,9 @@ target_link_libraries( IPbroadcaster ${catkin_LIBRARIES} )
 
 add_executable( IPreceiver src/UDPSocket.cpp src/IPreceiver.cpp )
 target_link_libraries( IPreceiver ${catkin_LIBRARIES} )
+
+add_library( rviz_visualization src/rviz_visualization.cpp )
+target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
 
 #==============================================================================
 # Installation
