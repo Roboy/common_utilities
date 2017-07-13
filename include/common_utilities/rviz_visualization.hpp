@@ -4,17 +4,36 @@
 #include <visualization_msgs/Marker.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <tf/tf.h>
+#include <interactive_markers/menu_handler.h>
+#include <interactive_markers/interactive_marker_server.h>
 
 using namespace Eigen;
+
+static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
+static interactive_markers::MenuHandler menu_handler;
 
 struct COLOR{
     COLOR(float r, float g, float b, float a):r(r),g(g),b(b),a(a){};
     float r,g,b,a;
 };
 
+void processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback );
+
+using namespace visualization_msgs;
+
 class rviz_visualization{
 public:
     rviz_visualization();
+
+    Marker makeBox( InteractiveMarker &msg );
+
+    InteractiveMarkerControl& makeBoxControl( InteractiveMarker &msg );
+
+    void make6DofMarker( bool fixed, unsigned int interaction_mode, const tf::Vector3& position,
+                         bool show_6dof, double scale=1, const char *frame="world", const char *name="interactive_marker",
+                         const char *description="for interaction and shit" );
+
     /**
      * Publishes a mesh visualization marker
      * @param pos at this position

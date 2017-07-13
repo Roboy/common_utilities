@@ -10,7 +10,7 @@ SET(CMAKE_BUILD_TYPE Debug)
 #==============================================================================
 # Dependencies
 #==============================================================================
-find_package(catkin REQUIRED roscpp std_msgs)
+find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers)
 catkin_package(CATKIN_DEPENDS message_runtime)
 
 # Eigen
