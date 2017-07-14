@@ -183,6 +183,22 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
     interactive_marker_server->applyChanges();
 }
 
+geometry_msgs::Vector3 rviz_visualization::convertEigenToGeometry(const Vector3d &vector_in){
+    geometry_msgs::Vector3 vector_out;
+    vector_out.x = vector_in[0];
+    vector_out.y = vector_in[1];
+    vector_out.z = vector_in[2];
+    return vector_out;
+}
+
+Vector3d rviz_visualization::convertGeometryToEigen(const geometry_msgs::Vector3 &vector_in){
+    Vector3d vector_out;
+    vector_out[0] = vector_in.x;
+    vector_out[1] = vector_in.y;
+    vector_out[2] = vector_in.z;
+    return vector_out;
+}
+
 void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const char *modelname,
                                      const char *frame, const char *ns, int message_id, int duration) {
     visualization_msgs::Marker mesh;

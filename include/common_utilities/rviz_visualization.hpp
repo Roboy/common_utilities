@@ -34,6 +34,9 @@ public:
                          bool show_6dof, double scale=1, const char *frame="world", const char *name="interactive_marker",
                          const char *description="for interaction and shit" );
 
+    Vector3d convertGeometryToEigen(const geometry_msgs::Vector3 &vector_in);
+    geometry_msgs::Vector3 convertEigenToGeometry(const Vector3d &vector_in);
+
     /**
      * Publishes a mesh visualization marker
      * @param pos at this position
