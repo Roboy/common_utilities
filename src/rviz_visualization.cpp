@@ -200,7 +200,7 @@ Vector3d rviz_visualization::convertGeometryToEigen(const geometry_msgs::Vector3
 }
 
 void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const char *modelname,
-                                     const char *frame, const char *ns, int message_id, int duration) {
+                                     const char *frame, const char *ns, int message_id, double duration) {
     visualization_msgs::Marker mesh;
     mesh.header.frame_id = frame;
     mesh.ns = ns;
@@ -230,7 +230,7 @@ void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const
 };
 
 void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const char *ns, int message_id, COLOR color,
-                                       float radius, int duration) {
+                                       float radius, double duration) {
     visualization_msgs::Marker sphere;
     sphere.header.frame_id = frame;
     sphere.ns = ns;
@@ -258,7 +258,7 @@ void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const c
 };
 
 void rviz_visualization::publishCube(Vector3d &pos, Vector4d &quat, const char *frame, const char *ns, int message_id,
-                                     COLOR color, float radius, int duration) {
+                                     COLOR color, float radius, double duration) {
     visualization_msgs::Marker cube;
     cube.header.frame_id = frame;
     cube.ns = ns;
@@ -285,7 +285,7 @@ void rviz_visualization::publishCube(Vector3d &pos, Vector4d &quat, const char *
 };
 
 void rviz_visualization::publishRay(Vector3d &pos, Vector3d &dir, const char *frame, const char *ns, int message_id,
-                                    COLOR color, int duration) {
+                                    COLOR color, double duration) {
     visualization_msgs::Marker arrow;
     arrow.ns = ns;
     arrow.type = visualization_msgs::Marker::ARROW;
@@ -316,7 +316,7 @@ void rviz_visualization::publishRay(Vector3d &pos, Vector3d &dir, const char *fr
 };
 
 void rviz_visualization::publishText(Vector3d &pos, const char *text, const char *frame, const char *ns, int message_id,
-                                     COLOR color, int duration, float height) {
+                                     COLOR color, double duration, float height) {
     visualization_msgs::Marker text_msg;
     text_msg.header.frame_id = frame;
     text_msg.ns = ns;
