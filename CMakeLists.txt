@@ -11,7 +11,7 @@ SET(CMAKE_BUILD_TYPE Debug)
 # Dependencies
 #==============================================================================
 find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers)
-catkin_package(CATKIN_DEPENDS message_runtime)
+catkin_package(CATKIN_DEPENDS message_runtime INCLUDE_DIRS include)
 
 # Eigen
 find_package(PkgConfig REQUIRED )
@@ -44,4 +44,9 @@ install(TARGETS
 install(FILES
         package.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        )
+
+install(DIRECTORY include/common_utilities/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+        FILES_MATCHING PATTERN "*.hpp"
         )

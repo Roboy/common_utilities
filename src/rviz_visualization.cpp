@@ -71,6 +71,10 @@ rviz_visualization::rviz_visualization() {
     menu_handler.insert( sub_menu_handle, "Second Entry", &processFeedback );
 }
 
+rviz_visualization::~rviz_visualization() {
+    interactive_marker_server->clear();
+}
+
 Marker rviz_visualization::makeBox( InteractiveMarker &msg )
 {
     Marker marker;
@@ -336,3 +340,11 @@ void rviz_visualization::publishText(Vector3d &pos, const char *text, const char
     text_msg.text = text;
     visualization_pub.publish(text_msg);
 };
+
+void rviz_visualization::clearAll() {
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "world";
+    marker.id = 0;
+    marker.action = visualization_msgs::Marker::DELETEALL;
+    visualization_pub.publish(marker);
+}

@@ -222,9 +222,9 @@ uint32_t UDPSocket::receiveHostIP(char *hostname){
         memcpy(hostname,&buf[4],20);
         return IP;
     }else if(numbytes < 24){
-        ROS_DEBUG( "received more bytes than expected %d", numbytes);
+        ROS_DEBUG( "received more bytes than expected %ld", numbytes);
     }else if(numbytes > 24) {
-        ROS_DEBUG("received less bytes than expected  %d", numbytes);
+        ROS_DEBUG("received less bytes than expected  %ld", numbytes);
     }
     return 0;
 }

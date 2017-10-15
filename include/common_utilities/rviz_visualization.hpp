@@ -25,6 +25,7 @@ using namespace visualization_msgs;
 class rviz_visualization{
 public:
     rviz_visualization();
+    ~rviz_visualization();
 
     Marker makeBox( InteractiveMarker &msg );
 
@@ -96,6 +97,8 @@ public:
      * @param height height of the text
      */
     void publishText(Vector3d &pos, const char *text, const char *frame, const char *ns, int message_id, COLOR color, double duration, float height);
+
+    void clearAll();
 private:
     ros::NodeHandlePtr nh;
     ros::Publisher visualization_pub;
