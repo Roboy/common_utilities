@@ -95,6 +95,16 @@ public:
     bool broadcastHostIP(char* hostname);
 
     /**
+     * Listens for UDP package containing lighthouse tracking data
+     * @param sensorID sensor id
+     * @param lighthouse witch lighthouse
+     * @param axis
+     * @param sweepDuration
+     * @return
+     */
+    bool receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint32_t &sweepDuration);
+
+    /**
      * Converts a byte internet address to a human readable address
      * @param inet
      * @param inet_str

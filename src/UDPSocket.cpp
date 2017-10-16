@@ -242,6 +242,20 @@ bool UDPSocket::broadcastHostIP(char *hostname){
     return broadcastUDP();
 }
 
+bool UDPSocket::receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint32_t &sweepDuration){
+    if(receiveUDP() && numbytes == 5 ){
+        uint16_t magic_number = (uint16_t)((uint8_t)buf[1]<<8|(uint8_t)buf[0]);
+        if(magic_number==0xBEEF){
+            sensorID = buf[2]&0b00111111;
+            lighthouse = buf[2]>>6;
+            axis = buf[2]>>7;
+            sweepDuration = (uint32_t)((uint8_t)buf[3]<<8|(uint8_t)buf[4]);
+            return true;
+        }
+    }
+    return false;
+}
+
 bool UDPSocket::convertByte2Text(uint32_t inet, char *inet_str){
     if(inet_ntop(AF_INET, &inet, inet_str, INET_ADDRSTRLEN) == NULL)
         return false;
@@ -275,6 +289,8 @@ bool UDPSocket::whatsMyIP(string &ip) {
     getifaddrs(&ifAddrStruct);
     char IP[INET_ADDRSTRLEN];
 
+    bool eth_ip = false, wifi_ip = false;
+    string eth_ip_str, wifi_ip_str;
     for (struct ifaddrs *ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
         if (!ifa->ifa_addr) {
             continue;
@@ -285,27 +301,44 @@ bool UDPSocket::whatsMyIP(string &ip) {
 
             inet_ntop(AF_INET, tmpAddrPtr, IP, INET_ADDRSTRLEN);
             string str(ifa->ifa_name);
-            if (str.find("wlp") != std::string::npos ||
-                str.find("eth") != std::string::npos ||
+            if (str.find("eth") != std::string::npos ||
                 str.find("enp") != std::string::npos) { // if wifi or ethernet adapter
                 ROS_INFO("%s IP Address %s", ifa->ifa_name, IP);
-                ip = string(IP);
-                myIP.second = ip;
-                return convertText2Byte(IP,&myIP.first);
+                eth_ip_str = string(IP);
+                eth_ip = true;
+            }
+            if (str.find("wlp") != std::string::npos ||
+                str.find("wlx") != std::string::npos) { // if wifi or ethernet adapter
+                ROS_INFO("%s IP Address %s", ifa->ifa_name, IP);
+                wifi_ip_str = string(IP);
+                wifi_ip = true;
             }
         }
     }
+    if(wifi_ip){
+        myIP.second = wifi_ip_str;
+        convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
+        ROS_INFO("using wifi IP Address %s", wifi_ip_str.c_str());
+        return true;
+    }else if(eth_ip){
+        myIP.second = eth_ip_str;
+        convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
+        ROS_INFO("using eth IP Address %s", wifi_ip_str.c_str());
+        return true;
+    }
+
+
     return false;
 }
 
 bool UDPSocket::receiveUDP() {
     if ((numbytes = recv(sockfd, buf, MAXBUFLENGTH - 1, 0)) ==
         -1) {
-        ROS_INFO_THROTTLE(5, "received nothing");
+        ROS_DEBUG_THROTTLE(5, "received nothing");
         return false;
     }else {
-        ROS_INFO_THROTTLE(5, "got message: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
-        BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " ",
+        ROS_DEBUG_THROTTLE(5, "got message of length %ld: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
+        BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " ", numbytes, BYTE_TO_BINARY(buf[4]),
                 BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[2]), BYTE_TO_BINARY(buf[1]), BYTE_TO_BINARY(buf[0]));
     }
     return true;
