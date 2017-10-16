@@ -102,7 +102,7 @@ public:
      * @param sweepDuration
      * @return
      */
-    bool receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint32_t &sweepDuration);
+    bool receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint16_t &sweepDuration);
 
     /**
      * Converts a byte internet address to a human readable address

@@ -242,14 +242,15 @@ bool UDPSocket::broadcastHostIP(char *hostname){
     return broadcastUDP();
 }
 
-bool UDPSocket::receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint32_t &sweepDuration){
-    if(receiveUDP() && numbytes == 5 ){
+bool UDPSocket::receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint16_t &sweepDuration){
+    if(receiveUDP() && numbytes == 8 ){
         uint16_t magic_number = (uint16_t)((uint8_t)buf[1]<<8|(uint8_t)buf[0]);
         if(magic_number==0xBEEF){
-            sensorID = buf[2]&0b00111111;
-            lighthouse = buf[2]>>6;
-            axis = buf[2]>>7;
-            sweepDuration = (uint32_t)((uint8_t)buf[3]<<8|(uint8_t)buf[4]);
+            sensorID = buf[4];
+            lighthouse = buf[2];
+            axis = buf[3];
+            sweepDuration = (uint16_t)((uint8_t)buf[7]<<8|(uint8_t)buf[6]);
+//            ROS_INFO(BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[4]), BYTE_TO_BINARY(buf[5]));
             return true;
         }
     }
