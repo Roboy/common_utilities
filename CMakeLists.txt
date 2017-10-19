@@ -44,6 +44,12 @@ install(TARGETS
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
         )
 
+install(TARGETS
+        UDPSocket
+        rviz_visualization
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        )
+
 install(FILES
         package.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
