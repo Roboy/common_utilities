@@ -11,12 +11,17 @@ SET(CMAKE_BUILD_TYPE Debug)
 # Dependencies
 #==============================================================================
 find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers)
-catkin_package(CATKIN_DEPENDS message_runtime INCLUDE_DIRS include LIBRARIES rviz_visualization UDPSocket)
+catkin_package(CATKIN_DEPENDS message_runtime INCLUDE_DIRS include
+        LIBRARIES rviz_visualization UDPSocket MotorConfig)
 
 # Eigen
 find_package(PkgConfig REQUIRED )
 pkg_check_modules(EIGEN3 REQUIRED eigen3)
 include_directories(${EIGEN3_INCLUDE_DIRS})
+
+# yaml-cpp
+pkg_check_modules( yaml-cpp REQUIRED yaml-cpp)
+include_directories(${yaml-cpp_INCLUDE_DIRS})
 
 include_directories( include ${catkin_INCLUDE_DIRS} )
 
@@ -35,6 +40,9 @@ target_link_libraries( IPreceiver ${catkin_LIBRARIES} UDPSocket )
 add_library( rviz_visualization src/rviz_visualization.cpp )
 target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
 
+add_library( MotorConfig src/MotorConfig.cpp )
+target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
+
 #==============================================================================
 # Installation
 #==============================================================================
@@ -47,6 +55,7 @@ install(TARGETS
 install(TARGETS
         UDPSocket
         rviz_visualization
+        MotorConfig
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         )
 
