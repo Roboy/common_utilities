@@ -19,9 +19,9 @@ bool MotorConfig::readConfig(const string &filepath){
             }
         }
         coeffs_displacement2force[motor_id] = polynomial_parameters;
-        ROS_INFO_STREAM(motor_id << "\t" << coeffs_displacement2force[motor_id][0]<< "\t" << coeffs_displacement2force[motor_id][1]
-                                 << "\t" << coeffs_displacement2force[motor_id][2]<< "\t" << coeffs_displacement2force[motor_id][3]
-                                 << "\t" << coeffs_displacement2force[motor_id][4]);
+//        ROS_INFO_STREAM(motor_id << "\t" << coeffs_displacement2force[motor_id][0]<< "\t" << coeffs_displacement2force[motor_id][1]
+//                                 << "\t" << coeffs_displacement2force[motor_id][2]<< "\t" << coeffs_displacement2force[motor_id][3]
+//                                 << "\t" << coeffs_displacement2force[motor_id][4]);
     }
     motor_polynomial_parameter =
             config["motor_polynomial_parameters_force2displacement"].as<vector<vector<float >>>();
@@ -38,9 +38,9 @@ bool MotorConfig::readConfig(const string &filepath){
             }
         }
         coeffs_force2displacement[motor_id] = polynomial_parameters;
-        ROS_INFO_STREAM(motor_id << "\t" << coeffs_force2displacement[motor_id][0]<< "\t" << coeffs_force2displacement[motor_id][1]
-                                 << "\t" << coeffs_force2displacement[motor_id][2]<< "\t" << coeffs_force2displacement[motor_id][3]
-                                 << "\t" << coeffs_force2displacement[motor_id][4]);
+//        ROS_INFO_STREAM(motor_id << "\t" << coeffs_force2displacement[motor_id][0]<< "\t" << coeffs_force2displacement[motor_id][1]
+//                                 << "\t" << coeffs_force2displacement[motor_id][2]<< "\t" << coeffs_force2displacement[motor_id][3]
+//                                 << "\t" << coeffs_force2displacement[motor_id][4]);
     }
     return true;
 }
@@ -68,9 +68,9 @@ bool MotorConfig::writeConfig(const string &filepath){
             node[i+1] = coefficients.second[i];
         }
         config["motor_polynomial_parameters_displacement2force"].push_back(node);
-        ROS_INFO_STREAM(coefficients.first << "\t" << coeffs_displacement2force[coefficients.first][0]<< "\t" << coeffs_displacement2force[coefficients.first][1]
-                                           << "\t" << coeffs_displacement2force[coefficients.first][2]<< "\t" << coeffs_displacement2force[coefficients.first][3]
-                                           << "\t" << coeffs_displacement2force[coefficients.first][4]);
+//        ROS_DEBUG_STREAM(coefficients.first << "\t" << coeffs_displacement2force[coefficients.first][0]<< "\t" << coeffs_displacement2force[coefficients.first][1]
+//                                           << "\t" << coeffs_displacement2force[coefficients.first][2]<< "\t" << coeffs_displacement2force[coefficients.first][3]
+//                                           << "\t" << coeffs_displacement2force[coefficients.first][4]);
     }
 
     for (auto const &coefficients : coeffs_force2displacement) {
@@ -89,9 +89,9 @@ bool MotorConfig::writeConfig(const string &filepath){
             node[i+1] = coefficients.second[i];
         }
         config["motor_polynomial_parameters_force2displacement"].push_back(node);
-        ROS_INFO_STREAM(coefficients.first << "\t" << coeffs_force2displacement[coefficients.first][0]<< "\t" << coeffs_force2displacement[coefficients.first][1]
-                                           << "\t" << coeffs_force2displacement[coefficients.first][2]<< "\t" << coeffs_force2displacement[coefficients.first][3]
-                                           << "\t" << coeffs_force2displacement[coefficients.first][4]);
+//        ROS_DEBUG_STREAM(coefficients.first << "\t" << coeffs_force2displacement[coefficients.first][0]<< "\t" << coeffs_force2displacement[coefficients.first][1]
+//                                           << "\t" << coeffs_force2displacement[coefficients.first][2]<< "\t" << coeffs_force2displacement[coefficients.first][3]
+//                                           << "\t" << coeffs_force2displacement[coefficients.first][4]);
     }
 
     fout << config;
