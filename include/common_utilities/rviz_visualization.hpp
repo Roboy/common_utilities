@@ -96,7 +96,9 @@ public:
      * @param height height of the text
      */
     void publishText(Vector3d &pos, const char *text, const char *frame, const char *ns, int message_id, COLOR color, double duration, float height);
-
+    /**
+     * Clears all markers in rviz
+     */
     void clearAll();
 private:
     ros::NodeHandlePtr nh;
