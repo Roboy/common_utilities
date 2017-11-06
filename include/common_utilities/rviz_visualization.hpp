@@ -10,15 +10,10 @@
 
 using namespace Eigen;
 
-static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
-static interactive_markers::MenuHandler menu_handler;
-
 struct COLOR{
     COLOR(float r, float g, float b, float a):r(r),g(g),b(b),a(a){};
     float r,g,b,a;
 };
-
-void processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback );
 
 using namespace visualization_msgs;
 
@@ -26,6 +21,10 @@ class rviz_visualization{
 public:
     rviz_visualization();
     ~rviz_visualization();
+
+    static void processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback );
+
+    void initializeInteractiveMarkerServer();
 
     Marker makeBox( InteractiveMarker &msg );
 
@@ -102,4 +101,7 @@ public:
 private:
     ros::NodeHandlePtr nh;
     ros::Publisher visualization_pub;
+    static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
+    static interactive_markers::MenuHandler menu_handler;
+    static bool first;
 };
