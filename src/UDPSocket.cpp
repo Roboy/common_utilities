@@ -2,8 +2,8 @@
 
 UDPSocket::UDPSocket(const char *server_IP, int server_port, const char *client_IP, int client_port, bool exclusive):
         exclusive(exclusive){
-    ROS_INFO_STREAM("creating socket on " << server_IP << ":" << server_port << " with client " << client_IP << ":"
-                                          << client_port);
+    cout << "creating socket on " << server_IP << ":" << server_port << " with client " << client_IP << ":"
+                                          << client_port << endl;
     int rv;
 
     struct addrinfo hints, *p;
@@ -23,23 +23,23 @@ UDPSocket::UDPSocket(const char *server_IP, int server_port, const char *client_
     // loop through all the results, make a socket and bind
     for (p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-            ROS_ERROR("talker: socket");
+            fprintf(stderr, "talker: socket\n");
             continue;
         }
         if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &yes, sizeof(int)) == -1) {
-            ROS_ERROR("setsockopt");
+            fprintf(stderr, "setsockopt\n");
             continue;
         };
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
             close(sockfd);
-            ROS_ERROR("listener: bind");
+            fprintf(stderr, "listener: bind\n");
             continue;
         }
         break;
     }
 
     if (p == NULL) {
-        ROS_ERROR("talker: failed to bind socket");
+        fprintf(stderr, "talker: failed to bind socket\n");
         return;
     }
 
@@ -57,8 +57,7 @@ UDPSocket::UDPSocket(const char *server_IP, int server_port, const char *client_
 UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exclusive(exclusive) {
     string myIP;
     if (whatsMyIP(myIP)) {
-        ROS_INFO_STREAM(
-                "creating socket on " << myIP << ":" << BROADCAST_PORT << " with client " << client_IP << ":" << client_port);
+        cout <<"creating socket on " << myIP << ":" << BROADCAST_PORT << " with client " << client_IP << ":" << client_port << endl;
         int rv;
         struct addrinfo hints, *p;
 
@@ -69,7 +68,7 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exc
         char pstr[10];
         snprintf(pstr, 10, "%d", BROADCAST_PORT);
         if ((rv = getaddrinfo(myIP.c_str(), pstr, &hints, &servinfo)) != 0) {
-            ROS_ERROR("getaddrinfo: %s", gai_strerror(rv));
+            fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
             return;
         }
 
@@ -77,23 +76,23 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exc
         // loop through all the results, make a socket and bind
         for (p = servinfo; p != NULL; p = p->ai_next) {
             if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-                ROS_ERROR("talker: socket");
+                fprintf(stderr, "talker: socket\n");
                 continue;
             }
             if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &yes, sizeof(int)) == -1) {
-                ROS_ERROR("setsockopt");
+                fprintf(stderr, "setsockopt\n");
                 continue;
             };
             if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
                 close(sockfd);
-                ROS_ERROR("listener: bind");
+                fprintf(stderr, "listener: bind\n");
                 continue;
             }
             break;
         }
 
         if (p == NULL) {
-            ROS_ERROR("talker: failed to bind socket");
+            fprintf(stderr, "talker: failed to bind socket\n");
             return;
         }
 
@@ -107,15 +106,14 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exc
 
         initialized = true;
     }else{
-        ROS_ERROR("could not create UDP socket");
+        fprintf(stderr, "could not create UDP socket\n");
     }
 }
 
 UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bool exclusive):exclusive(exclusive) {
     string myIP;
     if (whatsMyIP(myIP)) {
-        ROS_INFO_STREAM(
-                "creating socket on " << myIP << ":" << server_port << " with client " << client_IP << ":" << client_port);
+        cout << "creating socket on " << myIP << ":" << server_port << " with client " << client_IP << ":" << client_port << endl;
         int rv;
         struct addrinfo hints, *p;
 
@@ -126,7 +124,7 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bo
         char pstr[10];
         snprintf(pstr, 10, "%d", server_port);
         if ((rv = getaddrinfo(myIP.c_str(), pstr, &hints, &servinfo)) != 0) {
-            ROS_ERROR("getaddrinfo: %s", gai_strerror(rv));
+            fprintf(stderr, "getaddrinfo: %s", gai_strerror(rv));
             return;
         }
 
@@ -134,23 +132,23 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bo
         // loop through all the results, make a socket and bind
         for (p = servinfo; p != NULL; p = p->ai_next) {
             if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-                ROS_ERROR("talker: socket");
+                fprintf(stderr, "talker: socket");
                 continue;
             }
             if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &yes, sizeof(int)) == -1) {
-                ROS_ERROR("setsockopt");
+                fprintf(stderr, "setsockopt");
                 continue;
             };
             if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
                 close(sockfd);
-                ROS_ERROR("listener: bind");
+                fprintf(stderr, "listener: bind");
                 continue;
             }
             break;
         }
 
         if (p == NULL) {
-            ROS_ERROR("talker: failed to bind socket");
+            fprintf(stderr, "talker: failed to bind socket");
             return;
         }
 
@@ -164,7 +162,7 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bo
 
         initialized = true;
     }else{
-        ROS_ERROR("could not create UDP socket");
+        fprintf(stderr, "could not create UDP socket");
     }
 }
 
@@ -186,14 +184,14 @@ UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
 
     // creat UDP socket
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-        ROS_ERROR("talker: socket");
+        fprintf(stderr, "talker: socket");
         return;
     }
 
     // Allow broadcasts
     int yes = true;
     if  (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const void *)&yes, sizeof(int)) == -1) {
-        ROS_ERROR("broadcasting not allowed");
+        fprintf(stderr, "broadcasting not allowed");
         return;
     }
 
@@ -204,7 +202,7 @@ UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
         // Bind an address to our socket, so that client programs can listen to this server
         if (bind(sockfd, (struct sockaddr *) &client_addr, client_addr_len) == -1) {
             close(sockfd);
-            ROS_ERROR("broadcaster bind error");
+            fprintf(stderr, "broadcaster bind error");
             return;
         }
     }
@@ -222,9 +220,9 @@ uint32_t UDPSocket::receiveHostIP(char *hostname){
         memcpy(hostname,&buf[4],20);
         return IP;
     }else if(numbytes < 24){
-        ROS_DEBUG( "received more bytes than expected %ld", numbytes);
+        printf( "received more bytes than expected %ld\n", numbytes);
     }else if(numbytes > 24) {
-        ROS_DEBUG("received less bytes than expected  %ld", numbytes);
+        printf("received less bytes than expected  %ld\n", numbytes);
     }
     return 0;
 }
@@ -277,7 +275,7 @@ bool UDPSocket::setTimeOut(int usecs) {
     tv.tv_sec = 0;
     tv.tv_usec = usecs;
     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
-        ROS_ERROR("Error setting timeout");
+        fprintf(stderr, "Error setting timeout\n");
         return false;
     }
     return true;
@@ -304,13 +302,13 @@ bool UDPSocket::whatsMyIP(string &ip) {
             string str(ifa->ifa_name);
             if (str.find("eth") != std::string::npos ||
                 str.find("enp") != std::string::npos) { // if wifi or ethernet adapter
-                ROS_INFO("%s IP Address %s", ifa->ifa_name, IP);
+                printf("%s IP Address %s\n", ifa->ifa_name, IP);
                 eth_ip_str = string(IP);
                 eth_ip = true;
             }
             if (str.find("wlp") != std::string::npos ||
                 str.find("wlx") != std::string::npos) { // if wifi or ethernet adapter
-                ROS_INFO("%s IP Address %s", ifa->ifa_name, IP);
+                printf("%s IP Address %s\n", ifa->ifa_name, IP);
                 wifi_ip_str = string(IP);
                 wifi_ip = true;
             }
@@ -319,12 +317,12 @@ bool UDPSocket::whatsMyIP(string &ip) {
     if(wifi_ip){
         myIP.second = wifi_ip_str;
         convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
-        ROS_INFO("using wifi IP Address %s", wifi_ip_str.c_str());
+        printf("using wifi IP Address %s\n", wifi_ip_str.c_str());
         return true;
     }else if(eth_ip){
         myIP.second = eth_ip_str;
         convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
-        ROS_INFO("using eth IP Address %s", wifi_ip_str.c_str());
+        printf("using eth IP Address %s\n", wifi_ip_str.c_str());
         return true;
     }
 
@@ -332,35 +330,35 @@ bool UDPSocket::whatsMyIP(string &ip) {
     return false;
 }
 
-bool UDPSocket::receiveUDP() {
+int UDPSocket::receiveUDP() {
     if ((numbytes = recv(sockfd, buf, MAXBUFLENGTH - 1, 0)) ==
         -1) {
-        ROS_DEBUG_THROTTLE(5, "received nothing");
-        return false;
+//        ROS_DEBUG_THROTTLE(5, "received nothing");
+        return 0;
     }else {
-        ROS_DEBUG_THROTTLE(5, "got message of length %ld: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
-        BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " ", numbytes, BYTE_TO_BINARY(buf[4]),
-                BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[2]), BYTE_TO_BINARY(buf[1]), BYTE_TO_BINARY(buf[0]));
+//        ROS_DEBUG_THROTTLE(5, "got message of length %ld: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
+//        BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " ", numbytes, BYTE_TO_BINARY(buf[4]),
+//                BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[2]), BYTE_TO_BINARY(buf[1]), BYTE_TO_BINARY(buf[0]));
     }
-    return true;
+    return numbytes;
 }
 
-bool UDPSocket::receiveUDPFromClient() {
+int UDPSocket::receiveUDPFromClient() {
     if ((numbytes = recvfrom(sockfd, buf, MAXBUFLENGTH - 1, 0, (struct sockaddr *) &client_addr, &client_addr_len)) ==
         -1) {
-        ROS_DEBUG_THROTTLE(5, "received nothing");
-        return false;
+//        ROS_DEBUG_THROTTLE(5, "received nothing");
+        return 0;
     }else {
-        ROS_DEBUG_THROTTLE(1, "got message: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
-        BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " ",
-                BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[2]), BYTE_TO_BINARY(buf[1]), BYTE_TO_BINARY(buf[0]));
+//        ROS_DEBUG_THROTTLE(1, "got message: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
+//        BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " ",
+//                BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[2]), BYTE_TO_BINARY(buf[1]), BYTE_TO_BINARY(buf[0]));
     }
-    return true;
+    return numbytes;
 }
 
 bool UDPSocket::sendUDPToClient() {
     if ((numbytes = sendto(sockfd, buf, numbytes, 0, (struct sockaddr *) &client_addr, client_addr_len) == -1)) {
-        ROS_ERROR_THROTTLE(1, "could not send");
+//        ROS_ERROR_THROTTLE(1, "could not send");
         return false;
     }
     return true;
@@ -369,7 +367,7 @@ bool UDPSocket::sendUDPToClient() {
 bool UDPSocket::broadcastUDP() {
     if ((numbytes = sendto(sockfd, buf, numbytes, 0, (struct sockaddr *) &broadcast_addr, broadcast_addr_len)) ==
         -1) {
-        ROS_ERROR_THROTTLE(1, "could not broadcast");
+//        ROS_ERROR_THROTTLE(1, "could not broadcast");
         return false;
     }
     return true;

@@ -43,6 +43,9 @@ target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
 add_library( MotorConfig src/MotorConfig.cpp )
 target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
 
+add_executable( rfid_unlocker src/rfid_unlocker.cpp )
+target_link_libraries( rfid_unlocker ${catkin_LIBRARIES} UDPSocket )
+
 #==============================================================================
 # Installation
 #==============================================================================

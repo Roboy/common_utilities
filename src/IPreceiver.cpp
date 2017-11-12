@@ -1,3 +1,4 @@
+#include <ros/ros.h>
 #include "common_utilities/UDPSocket.hpp"
 
 int main(int argc, char *argv[]){
