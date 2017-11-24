@@ -240,16 +240,45 @@ bool UDPSocket::broadcastHostIP(char *hostname){
     return broadcastUDP();
 }
 
-bool UDPSocket::receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint16_t &sweepDuration){
-    if(receiveUDP() && numbytes == 8 ){
-        uint16_t magic_number = (uint16_t)((uint8_t)buf[1]<<8|(uint8_t)buf[0]);
-        if(magic_number==0xBEEF){
-            sensorID = buf[4];
-            lighthouse = buf[2];
-            axis = buf[3];
-            sweepDuration = (uint16_t)((uint8_t)buf[7]<<8|(uint8_t)buf[6]);
+bool UDPSocket::receiveSensorData(vector<uint32_t> &sensorID, vector<bool> &lighthouse, vector<bool> &axis, vector<uint32_t> &sweepDuration){
+    if(receiveUDP()){
+        if(numbytes == 32){
+            union {
+                uint32_t sensor[8];
+                uint8_t data[32];
+            }spi_frame;
+            memcpy(spi_frame.data, buf, 32);
+//            for(uint i = 0; i<32;i++){
+//                printf("%d ",buf[i]);
+//            }
+//            printf("\n");
+//            printf(BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
+//                           BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN "\n",
+//                   BYTE_TO_BINARY(spi_frame.data[3]), BYTE_TO_BINARY(spi_frame.data[2]),
+//                   BYTE_TO_BINARY(spi_frame.data[1]), BYTE_TO_BINARY(spi_frame.data[0]));
+            int j = 0;
+            for(uint i=0; i<8; i++){
+                uint32_t val = (uint32_t)((uint8_t)buf[j+3]<<24|(uint8_t)buf[j+2]<<16|(uint8_t)buf[j+1]<<8|(uint8_t)buf[j]);
+                int valid = (val >> 29) & 0x1;
+                if(!valid)
+                    continue;
+                lighthouse.push_back((val >> 31) & 0x1);
+                axis.push_back((val >> 30) & 0x1);
+                sensorID.push_back((val >>19) & 0x3FF);
+                sweepDuration.push_back((val & 0x7FFFF));
+                j+=4;
+            }
+            return !sensorID.empty();
+        }else if(numbytes == 8){
+            uint16_t magic_number = (uint16_t)((uint8_t)buf[1]<<8|(uint8_t)buf[0]);
+            if(magic_number==0xBEEF){
+                sensorID.push_back(buf[4]);
+                lighthouse.push_back(buf[2]);
+                axis.push_back(buf[3]);
+                sweepDuration.push_back((uint16_t)((uint8_t)buf[7]<<8|(uint8_t)buf[6]));
 //            ROS_INFO(BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(buf[3]), BYTE_TO_BINARY(buf[4]), BYTE_TO_BINARY(buf[5]));
-            return true;
+                return true;
+            }
         }
     }
     return false;

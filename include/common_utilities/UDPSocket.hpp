@@ -103,6 +103,8 @@ public:
      * @return
      */
     bool receiveSensorData(uint32_t &sensorID, bool &lighthouse, bool &axis, uint16_t &sweepDuration);
+    bool receiveSensorData(vector<uint32_t> &sensorID, vector<bool> &lighthouse,
+                           vector<bool> &axis, vector<uint32_t> &sweepDuration);
 
     /**
      * Converts a byte internet address to a human readable address
