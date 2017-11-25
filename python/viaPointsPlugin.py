@@ -115,8 +115,7 @@ class OBJECT_OT_Button(bpy.types.Operator):
                 meshes.add(l.attrib['name'])
 
         for mesh in meshes:
-            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}],
-                                    directory=stl_dir)
+            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}], directory=stl_dir, global_scale=0.001)
         return {'FINISHED'}
 
 #   acquire_viaPoints Button
@@ -183,7 +182,7 @@ class OBJECT_OT_Button(bpy.types.Operator):
         global tree
         global viaPoints
         global current_viaPoint
-        viaPoints[current_viaPoint].text = "%f %f %f" % (cursor.x/1000, cursor.y/1000, cursor.z/1000)
+        viaPoints[current_viaPoint].text = "%f %f %f" % (cursor.x, cursor.y, cursor.z)
         tree.write(sdf_file)
         return {'FINISHED'}
 # ------------------------------------------------------------------------

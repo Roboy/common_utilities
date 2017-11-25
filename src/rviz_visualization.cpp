@@ -8,7 +8,7 @@ rviz_visualization::rviz_visualization() {
     if (!ros::isInitialized()) {
         int argc = 0;
         char **argv = NULL;
-        ros::init(argc, argv, "TrackedObject",
+        ros::init(argc, argv, "rviz_visualization",
                   ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
     }
     nh = ros::NodeHandlePtr(new ros::NodeHandle);
@@ -296,6 +296,29 @@ void rviz_visualization::publishCube(Vector3d &pos, Vector4d &quat, const char *
     visualization_pub.publish(cube);
 };
 
+void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const char* ns, int message_id,
+                                         COLOR color, float radius, double duration){
+    visualization_msgs::Marker cylinder;
+    cylinder.header.frame_id = frame;
+    cylinder.ns = ns;
+    cylinder.type = visualization_msgs::Marker::CYLINDER;
+    cylinder.color.r = color.r;
+    cylinder.color.g = color.g;
+    cylinder.color.b = color.b;
+    cylinder.color.a = color.a;
+    cylinder.lifetime = ros::Duration(duration);
+    cylinder.scale.x = radius;
+    cylinder.scale.y = radius;
+    cylinder.scale.z = radius;
+    cylinder.action = visualization_msgs::Marker::ADD;
+    cylinder.header.stamp = ros::Time::now();
+    cylinder.id = message_id;
+    cylinder.pose.position.x = pos(0);
+    cylinder.pose.position.y = pos(1);
+    cylinder.pose.position.z = pos(2);
+    visualization_pub.publish(cylinder);
+}
+
 void rviz_visualization::publishRay(Vector3d &pos, Vector3d &dir, const char *frame, const char *ns, int message_id,
                                     COLOR color, double duration) {
     visualization_msgs::Marker arrow;
@@ -356,3 +379,4 @@ void rviz_visualization::clearAll() {
     marker.action = visualization_msgs::Marker::DELETEALL;
     visualization_pub.publish(marker);
 }
+

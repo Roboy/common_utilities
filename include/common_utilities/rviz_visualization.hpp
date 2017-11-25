@@ -74,6 +74,17 @@ public:
     void publishCube(Vector3d &pos, Vector4d &quat, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
 
     /**
+     * Publishes a cylinder visualization marker
+     * @param pos at this positon
+     * @param frame in this frame
+     * @param ns namespace
+     * @param message_id a unique id
+     * @param rgda rgb color (0-1) plus transparancy
+     * @param duration for this duration in seconds (0=forever)
+     */
+    void publishCylinder(Vector3d &pos, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+
+    /**
      * Publishes a ray visualization marker
      * @param pos at this positon
      * @param dir direction
