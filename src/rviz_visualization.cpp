@@ -211,8 +211,8 @@ Vector3d rviz_visualization::convertGeometryToEigen(const geometry_msgs::Vector3
     return vector_out;
 }
 
-void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const char *modelname,
-                                     const char *frame, const char *ns, int message_id, double duration) {
+void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond &orientation,
+                                     double scale, const char *frame, const char *ns, int message_id, double duration) {
     visualization_msgs::Marker mesh;
     mesh.header.frame_id = frame;
     mesh.ns = ns;
@@ -221,9 +221,9 @@ void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const
     mesh.color.g = 1.0f;
     mesh.color.b = 1.0f;
     mesh.color.a = 0.5;
-    mesh.scale.x = 1.0;
-    mesh.scale.y = 1.0;
-    mesh.scale.z = 1.0;
+    mesh.scale.x = scale;
+    mesh.scale.y = scale;
+    mesh.scale.z = scale;
     mesh.lifetime = ros::Duration(duration);
     mesh.header.stamp = ros::Time::now();
     mesh.action = visualization_msgs::Marker::ADD;
@@ -231,12 +231,12 @@ void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const
     mesh.pose.position.x = pos[0];
     mesh.pose.position.y = pos[1];
     mesh.pose.position.z = pos[2];
-    mesh.pose.orientation.x = orientation[0];
-    mesh.pose.orientation.y = orientation[1];
-    mesh.pose.orientation.z = orientation[2];
-    mesh.pose.orientation.w = orientation[3];
+    mesh.pose.orientation.x = orientation.x();
+    mesh.pose.orientation.y = orientation.y();
+    mesh.pose.orientation.z = orientation.z();
+    mesh.pose.orientation.w = orientation.w();
     char meshpath[200];
-    sprintf(meshpath, "package://darkroom/calibrated_objects/models/%s.dae", modelname);
+    sprintf(meshpath, "package://%s/%s/%s",package, relative_path, modelname);
     mesh.mesh_resource = meshpath;
     visualization_pub.publish(mesh);
 };
