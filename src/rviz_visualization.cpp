@@ -28,6 +28,7 @@ rviz_visualization::rviz_visualization() {
 
 rviz_visualization::~rviz_visualization() {
     interactive_marker_server->clear();
+    interactive_marker_server->applyChanges();
 }
 
 void rviz_visualization::processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
