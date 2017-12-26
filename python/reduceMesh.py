@@ -46,4 +46,4 @@ else:
   bpy.data.objects['node'].modifiers["Decimate"].ratio=float(argv[2])
   bpy.ops.object.modifier_apply(modifier='DECIMATE')
 
-  bpy.ops.export_mesh.stl(filepath=argv[1], check_existing=True, use_mesh_modifiers=True, global_scale=float(argv[3]), use_selection=True )
+  bpy.ops.export_mesh.stl(filepath=argv[1], check_existing=True, use_mesh_modifiers=True, global_scale=float(argv[3]))
