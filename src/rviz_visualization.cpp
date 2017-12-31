@@ -96,6 +96,13 @@ Marker rviz_visualization::makeBox( InteractiveMarker &msg )
     marker.color.g = 0.5;
     marker.color.b = 0.5;
     marker.color.a = 1.0;
+    marker.pose.position.x = 0;
+    marker.pose.position.y = 0;
+    marker.pose.position.z = 0;
+    marker.pose.orientation.x = 0;
+    marker.pose.orientation.y = 0;
+    marker.pose.orientation.z = 0;
+    marker.pose.orientation.w = 1;
 
     return marker;
 }
@@ -117,6 +124,10 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
     InteractiveMarker int_marker;
     int_marker.header.frame_id = frame;
     tf::pointTFToMsg(position, int_marker.pose.position);
+    int_marker.pose.orientation.w = 1;
+    int_marker.pose.orientation.x = 0;
+    int_marker.pose.orientation.y = 0;
+    int_marker.pose.orientation.z = 0;
     int_marker.scale = scale;
 
     int_marker.name = name;
@@ -126,7 +137,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
     makeBoxControl(int_marker);
 
     if(interaction_mode==InteractiveMarkerControl::MOVE_PLANE){
-        int_marker.controls[0].orientation.w = 1;
+        int_marker.controls[0].orientation.w = 0;
         int_marker.controls[0].orientation.x = 0;
         int_marker.controls[0].orientation.y = 1;
         int_marker.controls[0].orientation.z = 0;
@@ -155,7 +166,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
 
     if(show_6dof)
     {
-        control.orientation.w = 1;
+        control.orientation.w = 0;
         control.orientation.x = 1;
         control.orientation.y = 0;
         control.orientation.z = 0;
@@ -166,7 +177,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
         control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
         int_marker.controls.push_back(control);
 
-        control.orientation.w = 1;
+        control.orientation.w = 0;
         control.orientation.x = 0;
         control.orientation.y = 1;
         control.orientation.z = 0;
@@ -177,7 +188,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
         control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
         int_marker.controls.push_back(control);
 
-        control.orientation.w = 1;
+        control.orientation.w = 0;
         control.orientation.x = 0;
         control.orientation.y = 0;
         control.orientation.z = 1;
@@ -380,4 +391,3 @@ void rviz_visualization::clearAll() {
     marker.action = visualization_msgs::Marker::DELETEALL;
     visualization_pub.publish(marker);
 }
-
