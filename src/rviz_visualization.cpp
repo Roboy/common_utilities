@@ -274,10 +274,10 @@ void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const c
     sphere.pose.position.y = pos(1);
     sphere.pose.position.z = pos(2);
     sphere.pose.position.z = pos(2);
-    sphere.pose.orientation.x = 1;
+    sphere.pose.orientation.x = 0;
     sphere.pose.orientation.y = 0;
     sphere.pose.orientation.z = 0;
-    sphere.pose.orientation.w = 0;
+    sphere.pose.orientation.w = 1;
     visualization_pub.publish(sphere);
 };
 
@@ -328,6 +328,10 @@ void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const
     cylinder.pose.position.x = pos(0);
     cylinder.pose.position.y = pos(1);
     cylinder.pose.position.z = pos(2);
+    cylinder.pose.orientation.x = 0;
+    cylinder.pose.orientation.y = 0;
+    cylinder.pose.orientation.z = 0;
+    cylinder.pose.orientation.w = 1;
     visualization_pub.publish(cylinder);
 }
 
@@ -380,6 +384,10 @@ void rviz_visualization::publishText(Vector3d &pos, const char *text, const char
     text_msg.pose.position.x = pos(0);
     text_msg.pose.position.y = pos(1);
     text_msg.pose.position.z = pos(2);
+    text_msg.pose.orientation.x = 0;
+    text_msg.pose.orientation.y = 0;
+    text_msg.pose.orientation.z = 0;
+    text_msg.pose.orientation.w = 1;
     text_msg.text = text;
     visualization_pub.publish(text_msg);
 };
