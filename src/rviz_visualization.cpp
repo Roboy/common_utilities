@@ -28,6 +28,7 @@ rviz_visualization::rviz_visualization() {
 
 rviz_visualization::~rviz_visualization() {
     interactive_marker_server->clear();
+    interactive_marker_server->applyChanges();
 }
 
 void rviz_visualization::processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
@@ -95,6 +96,13 @@ Marker rviz_visualization::makeBox( InteractiveMarker &msg )
     marker.color.g = 0.5;
     marker.color.b = 0.5;
     marker.color.a = 1.0;
+    marker.pose.position.x = 0;
+    marker.pose.position.y = 0;
+    marker.pose.position.z = 0;
+    marker.pose.orientation.x = 0;
+    marker.pose.orientation.y = 0;
+    marker.pose.orientation.z = 0;
+    marker.pose.orientation.w = 1;
 
     return marker;
 }
@@ -116,6 +124,10 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
     InteractiveMarker int_marker;
     int_marker.header.frame_id = frame;
     tf::pointTFToMsg(position, int_marker.pose.position);
+    int_marker.pose.orientation.w = 1;
+    int_marker.pose.orientation.x = 0;
+    int_marker.pose.orientation.y = 0;
+    int_marker.pose.orientation.z = 0;
     int_marker.scale = scale;
 
     int_marker.name = name;
@@ -125,7 +137,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
     makeBoxControl(int_marker);
 
     if(interaction_mode==InteractiveMarkerControl::MOVE_PLANE){
-        int_marker.controls[0].orientation.w = 1;
+        int_marker.controls[0].orientation.w = 0;
         int_marker.controls[0].orientation.x = 0;
         int_marker.controls[0].orientation.y = 1;
         int_marker.controls[0].orientation.z = 0;
@@ -154,7 +166,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
 
     if(show_6dof)
     {
-        control.orientation.w = 1;
+        control.orientation.w = 0;
         control.orientation.x = 1;
         control.orientation.y = 0;
         control.orientation.z = 0;
@@ -165,7 +177,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
         control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
         int_marker.controls.push_back(control);
 
-        control.orientation.w = 1;
+        control.orientation.w = 0;
         control.orientation.x = 0;
         control.orientation.y = 1;
         control.orientation.z = 0;
@@ -176,7 +188,7 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
         control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
         int_marker.controls.push_back(control);
 
-        control.orientation.w = 1;
+        control.orientation.w = 0;
         control.orientation.x = 0;
         control.orientation.y = 0;
         control.orientation.z = 1;
@@ -211,8 +223,8 @@ Vector3d rviz_visualization::convertGeometryToEigen(const geometry_msgs::Vector3
     return vector_out;
 }
 
-void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const char *modelname,
-                                     const char *frame, const char *ns, int message_id, double duration) {
+void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond &orientation,
+                                     double scale, const char *frame, const char *ns, int message_id, double duration) {
     visualization_msgs::Marker mesh;
     mesh.header.frame_id = frame;
     mesh.ns = ns;
@@ -221,9 +233,9 @@ void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const
     mesh.color.g = 1.0f;
     mesh.color.b = 1.0f;
     mesh.color.a = 0.5;
-    mesh.scale.x = 1.0;
-    mesh.scale.y = 1.0;
-    mesh.scale.z = 1.0;
+    mesh.scale.x = scale;
+    mesh.scale.y = scale;
+    mesh.scale.z = scale;
     mesh.lifetime = ros::Duration(duration);
     mesh.header.stamp = ros::Time::now();
     mesh.action = visualization_msgs::Marker::ADD;
@@ -231,12 +243,12 @@ void rviz_visualization::publishMesh(Vector3d &pos, Vector4d &orientation, const
     mesh.pose.position.x = pos[0];
     mesh.pose.position.y = pos[1];
     mesh.pose.position.z = pos[2];
-    mesh.pose.orientation.x = orientation[0];
-    mesh.pose.orientation.y = orientation[1];
-    mesh.pose.orientation.z = orientation[2];
-    mesh.pose.orientation.w = orientation[3];
+    mesh.pose.orientation.x = orientation.x();
+    mesh.pose.orientation.y = orientation.y();
+    mesh.pose.orientation.z = orientation.z();
+    mesh.pose.orientation.w = orientation.w();
     char meshpath[200];
-    sprintf(meshpath, "package://darkroom/calibrated_objects/models/%s.dae", modelname);
+    sprintf(meshpath, "package://%s/%s/%s",package, relative_path, modelname);
     mesh.mesh_resource = meshpath;
     visualization_pub.publish(mesh);
 };
@@ -262,10 +274,10 @@ void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const c
     sphere.pose.position.y = pos(1);
     sphere.pose.position.z = pos(2);
     sphere.pose.position.z = pos(2);
-    sphere.pose.orientation.x = 1;
+    sphere.pose.orientation.x = 0;
     sphere.pose.orientation.y = 0;
     sphere.pose.orientation.z = 0;
-    sphere.pose.orientation.w = 0;
+    sphere.pose.orientation.w = 1;
     visualization_pub.publish(sphere);
 };
 
@@ -316,6 +328,10 @@ void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const
     cylinder.pose.position.x = pos(0);
     cylinder.pose.position.y = pos(1);
     cylinder.pose.position.z = pos(2);
+    cylinder.pose.orientation.x = 0;
+    cylinder.pose.orientation.y = 0;
+    cylinder.pose.orientation.z = 0;
+    cylinder.pose.orientation.w = 1;
     visualization_pub.publish(cylinder);
 }
 
@@ -368,6 +384,10 @@ void rviz_visualization::publishText(Vector3d &pos, const char *text, const char
     text_msg.pose.position.x = pos(0);
     text_msg.pose.position.y = pos(1);
     text_msg.pose.position.z = pos(2);
+    text_msg.pose.orientation.x = 0;
+    text_msg.pose.orientation.y = 0;
+    text_msg.pose.orientation.z = 0;
+    text_msg.pose.orientation.w = 1;
     text_msg.text = text;
     visualization_pub.publish(text_msg);
 };
@@ -379,4 +399,3 @@ void rviz_visualization::clearAll() {
     marker.action = visualization_msgs::Marker::DELETEALL;
     visualization_pub.publish(marker);
 }
-

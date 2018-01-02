@@ -30,6 +30,20 @@ public:
      * @return exists
      */
     inline bool fileExists(const string &filepath);
+    /**
+     * Transforms displacement to force using loaded coefficients
+     * @param displacement
+     * @param motor motor id (as listed in read config)
+     * @return force
+     */
+    double displacement2force(double displacement, int motor);
+    /**
+     * Transforms force to displacement using loaded coefficients
+     * @param displacement
+     * @param motor motor id (as listed in read config)
+     * @return force
+     */
+    double force2displacement(double force, int motor);
 
     map<int, vector<float>> coeffs_displacement2force, coeffs_force2displacement;
 };

@@ -39,6 +39,9 @@ public:
 
     /**
      * Publishes a mesh visualization marker
+     * @param package ros package in which this mesh is located
+     * @param relative_path the relative path inside that ros packae
+     * @param the mesh file name
      * @param pos at this position
      * @param orientation with this orientation
      * @param modelname name of the mesh.dae
@@ -47,8 +50,8 @@ public:
      * @param message_id unique id
      * @param duration in seconds
      */
-    void publishMesh(Vector3d &pos, Vector4d& orientation, const char* modelname,
-                     const char *frame, const char *ns, int message_id, double duration);
+    void publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond& orientation,
+                     double scale, const char *frame, const char *ns, int message_id, double duration);
 
     /**
      * Publishes a sphere visualization marker

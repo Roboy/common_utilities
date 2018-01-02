@@ -102,3 +102,19 @@ bool MotorConfig::fileExists(const string &filepath){
     struct stat buffer;
     return (stat (filepath.c_str(), &buffer) == 0);
 }
+
+double MotorConfig::displacement2force(double displacement, int motor){
+    double force = coeffs_displacement2force[motor][0];
+    for (uint i = 1; i < coeffs_displacement2force[motor].size(); i++) {
+        force += coeffs_displacement2force[motor][i] * pow(displacement, (double) i);
+    }
+    return force;
+}
+
+double MotorConfig::force2displacement(double force, int motor){
+    double displacement = coeffs_force2displacement[motor][0];
+    for (uint i = 1; i < coeffs_force2displacement[motor].size(); i++) {
+        displacement += coeffs_force2displacement[motor][i] * pow(force, (double) i);
+    }
+    return displacement;
+}
