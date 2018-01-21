@@ -345,9 +345,9 @@ void rviz_visualization::publishRay(Vector3d &pos, Vector3d &dir, const char *fr
     arrow.color.b = color.b;
     arrow.color.a = color.a;
     arrow.lifetime = ros::Duration(duration);
-    arrow.scale.x = 0.005;
-    arrow.scale.y = 0.03;
-    arrow.scale.z = 0.03;
+    arrow.scale.x = 0.0025;
+    arrow.scale.y = 0.015;
+    arrow.scale.z = 0.015;
     arrow.action = visualization_msgs::Marker::ADD;
     arrow.header.stamp = ros::Time::now();
 
