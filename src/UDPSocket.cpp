@@ -1,3 +1,4 @@
+#include <ifaddrs.h>
 #include "common_utilities/UDPSocket.hpp"
 
 UDPSocket::UDPSocket(const char *server_IP, int server_port, const char *client_IP, int client_port, bool exclusive):
@@ -55,8 +56,8 @@ UDPSocket::UDPSocket(const char *server_IP, int server_port, const char *client_
 }
 
 UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exclusive(exclusive) {
-    string myIP;
-    if (whatsMyIP(myIP)) {
+    string myIP, myBroadcastIP;
+    if (whatsMyIP(myIP,myBroadcastIP)) {
         cout <<"creating socket on " << myIP << ":" << BROADCAST_PORT << " with client " << client_IP << ":" << client_port << endl;
         int rv;
         struct addrinfo hints, *p;
@@ -111,8 +112,8 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exc
 }
 
 UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bool exclusive):exclusive(exclusive) {
-    string myIP;
-    if (whatsMyIP(myIP)) {
+    string myIP, myBroadcastIP;
+    if (whatsMyIP(myIP, myBroadcastIP)) {
         cout << "creating socket on " << myIP << ":" << server_port << " with client " << client_IP << ":" << client_port << endl;
         int rv;
         struct addrinfo hints, *p;
@@ -167,8 +168,8 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bo
 }
 
 UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
-    string myIP;
-    whatsMyIP(myIP);
+    string myIP, myBroadcastIP;
+    whatsMyIP(myIP, myBroadcastIP); // myBroadcastIP will not be used here
 
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_port = htons(port);
@@ -210,18 +211,75 @@ UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
     initialized = true;
 }
 
+UDPSocket::UDPSocket(int port, bool broadcaster) {
+    string myIP, myBroadcastIP;
+    whatsMyIP(myIP, myBroadcastIP);
+
+    broadcast_addr.sin_family = AF_INET;
+    broadcast_addr.sin_port = htons(port);
+    broadcast_addr.sin_addr.s_addr = inet_addr(myBroadcastIP.c_str());
+    broadcast_addr_len = sizeof(broadcast_addr);
+
+    client_addr.sin_family = AF_INET;
+    client_addr.sin_port = htons(port);
+    client_addr.sin_addr.s_addr = INADDR_ANY;
+    client_addr_len = sizeof(client_addr);
+
+    // creat UDP socket
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+        fprintf(stderr, "talker: socket");
+        return;
+    }
+
+    // Allow broadcasts
+    int yes = true;
+    if  (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const void *)&yes, sizeof(int)) == -1) {
+        fprintf(stderr, "broadcasting not allowed");
+        return;
+    }
+
+    // set 100ms timeout
+    setTimeOut(100000);
+
+    if(!broadcaster) {
+        // Bind an address to our socket, so that client programs can listen to this server
+        if (bind(sockfd, (struct sockaddr *) &client_addr, client_addr_len) == -1) {
+            close(sockfd);
+            fprintf(stderr, "broadcaster bind error");
+            return;
+        }
+    }
+
+    initialized = true;
+}
+
 UDPSocket::~UDPSocket() {
     close(sockfd);
 }
 
-uint32_t UDPSocket::receiveHostIP(char *hostname){
-    if(receiveUDPFromClient() && numbytes == 24){
-        uint32_t IP = (uint32_t)((uint8_t)buf[3] << 24 | (uint8_t)buf[2] << 16 | (uint8_t)buf[1] << 8 | (uint8_t)buf[0]);
-        memcpy(hostname,&buf[4],20);
-        return IP;
-    }else if(numbytes < 24){
+uint32_t UDPSocket::receiveHostIP(const char *key, uint32_t &IP){
+    if(!receiveUDPFromClient())
+        return 0;
+    char output[strlen(key)];
+    bool access_granted = true;
+    uint8_t user[4] = {0xBF, 0x42, 0x76, 0xE9};
+    int j = 0;
+    for (int i=0; i<strlen(key); i++)
+    {
+        output[i] = buf[i+4] ^ user[j];
+        if(output[i]!=key[i])
+            access_granted = false;
+        j++;
+        if(j == sizeof(user))
+            j = 0;
+    }
+//    printf("%s\n", output);
+    if(access_granted){
+        IP = (uint32_t)((uint8_t)buf[3] << 24 | (uint8_t)buf[2] << 16 | (uint8_t)buf[1] << 8 | (uint8_t)buf[0]);
+        return 3;
+    }else if(numbytes < strlen(key)+1){
         printf( "received more bytes than expected %ld\n", numbytes);
-    }else if(numbytes > 24) {
+    }else if(numbytes > strlen(key)+1) {
         printf("received less bytes than expected  %ld\n", numbytes);
     }
     return 0;
@@ -233,10 +291,10 @@ bool UDPSocket::broadcastHostIP(uint32_t IP){
     return broadcastUDP();
 }
 
-bool UDPSocket::broadcastHostIP(char *hostname){
-    numbytes = 24;
+bool UDPSocket::broadcastHostIP(char *key, int length){
+    numbytes = length+4;
     memcpy(buf,&myIP.first,sizeof(myIP.first));
-    memcpy(&buf[4],hostname,20);
+    memcpy(&buf[4],key,length);
     return broadcastUDP();
 }
 
@@ -310,15 +368,15 @@ bool UDPSocket::setTimeOut(int usecs) {
     return true;
 }
 
-bool UDPSocket::whatsMyIP(string &ip) {
+bool UDPSocket::whatsMyIP(string &ip, string &broadcast_ip, bool preferEthernet) {
     struct ifaddrs *ifAddrStruct = NULL;
-    void *tmpAddrPtr = NULL;
+    void *tmpAddrPtr = NULL, *tmpAddrPtr2 = NULL;
 
     getifaddrs(&ifAddrStruct);
-    char IP[INET_ADDRSTRLEN];
+    char IP[INET_ADDRSTRLEN], Broadcast_IP[INET_ADDRSTRLEN];
 
     bool eth_ip = false, wifi_ip = false;
-    string eth_ip_str, wifi_ip_str;
+    string eth_ip_str, eth_broadcast_ip_str, wifi_ip_str, wifi_broadcast_ip_str;
     for (struct ifaddrs *ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
         if (!ifa->ifa_addr) {
             continue;
@@ -326,32 +384,56 @@ bool UDPSocket::whatsMyIP(string &ip) {
         if (ifa->ifa_addr->sa_family == AF_INET) { // check it is IP4
             // is a valid IP4 Address
             tmpAddrPtr = &((struct sockaddr_in *) ifa->ifa_addr)->sin_addr;
+            tmpAddrPtr2 = &((struct sockaddr_in *) ifa->ifa_ifu.ifu_broadaddr)->sin_addr;
 
             inet_ntop(AF_INET, tmpAddrPtr, IP, INET_ADDRSTRLEN);
+            inet_ntop(AF_INET, tmpAddrPtr2, Broadcast_IP, INET_ADDRSTRLEN);
             string str(ifa->ifa_name);
             if (str.find("eth") != std::string::npos ||
                 str.find("enp") != std::string::npos) { // if wifi or ethernet adapter
-                printf("%s IP Address %s\n", ifa->ifa_name, IP);
+                printf("%s IP Address %s Broadcast IP %s\n", ifa->ifa_name, IP, Broadcast_IP);
                 eth_ip_str = string(IP);
+                eth_broadcast_ip_str = string(Broadcast_IP);
                 eth_ip = true;
             }
             if (str.find("wlp") != std::string::npos ||
                 str.find("wlx") != std::string::npos) { // if wifi or ethernet adapter
-                printf("%s IP Address %s\n", ifa->ifa_name, IP);
+                printf("%s IP Address %s Broadcast IP %s\n", ifa->ifa_name, IP, Broadcast_IP);
                 wifi_ip_str = string(IP);
+                wifi_broadcast_ip_str = string(Broadcast_IP);
                 wifi_ip = true;
             }
         }
     }
+
+    if(preferEthernet && eth_ip){
+        myIP.second = eth_ip_str;
+        myBroadcastIP.second = eth_broadcast_ip_str;
+        convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
+        convertText2Byte((char*)myIP.second.c_str(),&myBroadcastIP.first);
+        printf("using eth IP Address %s\n", eth_ip_str.c_str());
+        ip = myIP.second;
+        broadcast_ip = myBroadcastIP.second;
+        return true;
+    }
+
     if(wifi_ip){
         myIP.second = wifi_ip_str;
+        myBroadcastIP.second = wifi_broadcast_ip_str;
         convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
+        convertText2Byte((char*)myIP.second.c_str(),&myBroadcastIP.first);
         printf("using wifi IP Address %s\n", wifi_ip_str.c_str());
+        ip = myIP.second;
+        broadcast_ip = myBroadcastIP.second;
         return true;
     }else if(eth_ip){
         myIP.second = eth_ip_str;
+        myBroadcastIP.second = eth_broadcast_ip_str;
         convertText2Byte((char*)myIP.second.c_str(),&myIP.first);
-        printf("using eth IP Address %s\n", wifi_ip_str.c_str());
+        convertText2Byte((char*)myIP.second.c_str(),&myBroadcastIP.first);
+        printf("using eth IP Address %s\n", eth_ip_str.c_str());
+        ip = myIP.second;
+        broadcast_ip = myBroadcastIP.second;
         return true;
     }
 
@@ -396,7 +478,7 @@ bool UDPSocket::sendUDPToClient() {
 bool UDPSocket::broadcastUDP() {
     if ((numbytes = sendto(sockfd, buf, numbytes, 0, (struct sockaddr *) &broadcast_addr, broadcast_addr_len)) ==
         -1) {
-//        ROS_ERROR_THROTTLE(1, "could not broadcast");
+        printf("could not broadcast");
         return false;
     }
     return true;

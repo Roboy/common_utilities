@@ -1,50 +1,45 @@
 #include <ros/ros.h>
 #include "common_utilities/UDPSocket.hpp"
 
+const char* key = "The path of the righteous man is beset on all sides by the inequities of the "
+        "selfish and the tyranny of evil men. Blessed is he who, in the name of "
+        "charity and good will, shepherds the weak through the valley of the darkness. "
+        "For he is truly his brother's keeper and the finder of lost children. And I "
+        "will strike down upon thee with great vengeance and furious anger those who "
+        "attempt to poison and destroy my brothers. And you will know I am the Lord "
+        "when I lay my vengeance upon you\0";
+
 int main(int argc, char *argv[]){
+    if (!ros::isInitialized()) {
+        int argc = 0;
+        char **argv = NULL;
+        ros::init(argc, argv, "IPbroadcaster");
+    }
 
     char hostname[20];
     /* Open the command for reading. */
     FILE *fp = popen("hostname", "r");
-
     fgets(hostname, sizeof(hostname)-1, fp);
 
     // create the IP broadcast Socket
-    UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT));
+    UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, true));
 
-    uint32_t host_IP, broadcastIP;
-
-    switch(argc){
-        case 1:
-            host_IP = broadcast_socket->myIP.first;
-            ROS_INFO("Starting IP broadcaster with Host IP: %s", broadcast_socket->myIP.second.c_str());
-            break;
-        case 3:
-            ROS_INFO("IP: %s \t\t broadcastIP: %s", argv[1], argv[2]);
-            if(!broadcast_socket->convertText2Byte(argv[1], &host_IP)) {
-                ROS_ERROR(
-                        "holy shit, I was not able to convert your IP, are you sure it is an IP like 192.168.0.100 ??!!!");
-                return -2;
-            }
-            if(!broadcast_socket->convertText2Byte(argv[2], &broadcastIP)) {
-                ROS_ERROR(
-                        "holy shit, I was not able to convert your broadcast IP, are you sure it is an IP like 192.168.0.255 ??!!!");
-                return -2;
-            }
-            broadcast_socket.reset();
-            broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, broadcastIP));
-            ROS_INFO("Starting IP broadcaster with Host IP: %s", argv[1]);
-            break;
-        default:
-            ROS_ERROR("USAGE: rosrun common_utilities IPbroadcaster [192.168.0.100] [192.168.0.255]");
-            ROS_INFO("The IP and broadcast IP is optional. If you dont supply it, I will try to guess your IP and "
-                             "use 255.255.255.255 as the broadcast IP");
-            return -1;
+    // encrypt key
+    uint8_t user[4] = {0xBF, 0x42, 0x76, 0xE9};
+    char output[strlen(key)];
+    int j = 0;
+    for (int i=0; i<strlen(key); i++)
+    {
+        output[i] = key[i] ^ user[j];
+        j++;
+        if(j == sizeof(user))
+            j = 0;
     }
+//    printf("%s\n%s\n", key, output);
 
-    while(true){
+    while(ros::ok()){
         ROS_INFO("broadcasting HOST IP");
-        broadcast_socket->broadcastHostIP(hostname);
+        broadcast_socket->broadcastHostIP(output,strlen(key));
         usleep(5000000);
     }
 }

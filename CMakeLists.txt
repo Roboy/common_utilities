@@ -34,7 +34,7 @@ target_link_libraries( UDPSocket ${catkin_LIBRARIES}  )
 add_executable( IPbroadcaster src/IPbroadcaster.cpp )
 target_link_libraries( IPbroadcaster ${catkin_LIBRARIES} UDPSocket )
 
-add_executable( IPreceiver src/IPreceiver.cpp )
+add_executable( IPreceiver src/IPreceiver.cpp)
 target_link_libraries( IPreceiver ${catkin_LIBRARIES} UDPSocket )
 
 add_library( rviz_visualization src/rviz_visualization.cpp )

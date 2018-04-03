@@ -16,7 +16,7 @@ uint8_t user[4] = {0xBF, 0x42, 0x76, 0xE9};
 int main(int argc, char *argv[]){
     uint32_t client_IP, port = 8000;
     // create the IP broadcast Socket
-    UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(client_IP, port));
+    UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(client_IP, port, false));
 
     if(argc == 2) {
         if(!receiver_socket->convertText2Byte(argv[1], &client_IP)) {
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
             return -2;
         }
         receiver_socket.reset();
-        receiver_socket = UDPSocketPtr(new UDPSocket(port, client_IP));
+        receiver_socket = UDPSocketPtr(new UDPSocket(port, client_IP, false));
         printf("Starting rfid unlocker with client IP: %s:%d\n", argv[1],port);
     }else{
         printf("USAGE: rosrun common_utilities rfid_unlocker 192.168.0.104\n");

@@ -73,13 +73,21 @@ public:
      * @param broadcaster if true this binds the port to the broadcast port
      */
     UDPSocket(int port, int broadcastIP=0xffffffff, bool broadcaster=false);
+
+    /**
+     * Creates a broadcast socket on port
+     * @param port on this port
+     * @param broadcaster if true this binds the port to the broadcast port
+     */
+    UDPSocket(int port, bool broadcaster);
     ~UDPSocket();
 
     /**
      * Receive ROS master IP
-     * @return IP
+     * @param key only if this key is matched with the UDP message
+     * @return status (0 invalid, 1 too short, 2 too long, 3 accepted)
      */
-    uint32_t receiveHostIP(char *hostname);
+    uint32_t receiveHostIP(const char *key, uint32_t &IP);
 
     /**
       * Broadcast ROS master IP
@@ -89,10 +97,11 @@ public:
     bool broadcastHostIP(uint32_t IP);
     /**
       * Broadcast ROS master IP of the machine this node was run on
-      * @param hostname 
+      * @param key the key to unlock
+      * @param length the length inbytes of the key
       * @return successfully broadcasted
       */
-    bool broadcastHostIP(char* hostname);
+    bool broadcastHostIP(char *key, int length);
 
     /**
      * Listens for UDP package containing lighthouse tracking data
@@ -121,7 +130,7 @@ public:
      */
     bool convertText2Byte(char *inet_str, uint32_t *inet);
 
-    pair<uint32_t,string> myIP;
+    pair<uint32_t,string> myIP, myBroadcastIP;
 
     /**
     * receive from anyone
@@ -144,10 +153,12 @@ private:
 
     /**
      * Tries to guess your IP
-     * @param ip your IP
+     * @param IP your IP
+     * @param Broadcast_IP your broadcast IP
+     * @param preferEthernet if True ethernet will be preferred over wifi
      * @param success (fails if I can't find a valid IP for wifi or ethernet adapter)
      */
-    bool whatsMyIP(string &IP);
+    bool whatsMyIP(string &IP, string &Broadcast_IP, bool preferEthernet=true);
 
     bool initialized = false;
     /**

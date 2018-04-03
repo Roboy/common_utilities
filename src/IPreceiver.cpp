@@ -1,50 +1,38 @@
 #include <ros/ros.h>
-#include "common_utilities/UDPSocket.hpp"
+#include <common_utilities/UDPSocket.hpp>
+
+const char* key = "The path of the righteous man is beset on all sides by the inequities of the "
+        "selfish and the tyranny of evil men. Blessed is he who, in the name of "
+        "charity and good will, shepherds the weak through the valley of the darkness. "
+        "For he is truly his brother's keeper and the finder of lost children. And I "
+        "will strike down upon thee with great vengeance and furious anger those who "
+        "attempt to poison and destroy my brothers. And you will know I am the Lord "
+        "when I lay my vengeance upon you\0";
 
 int main(int argc, char *argv[]){
-    ros::init(argc, argv, "IPreceiver" );
-
-    ros::NodeHandle nh;
-
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
-
-    uint32_t client_IP, host_IP, broadcastIP;
-
+    if (!ros::isInitialized()) {
+        int argc = 0;
+        char **argv = NULL;
+        ros::init(argc, argv, "IPreceiver");
+    }
     // create the IP broadcast Socket
-    UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(client_IP, BROADCAST_PORT));
-
-    switch(argc){
-        case 1:
-            host_IP = receiver_socket->myIP.first;
-            ROS_INFO("Starting IP broadcaster with Host IP: %s", receiver_socket->myIP.second.c_str());
-            break;
-        case 2:
-            if(!receiver_socket->convertText2Byte(argv[1], &broadcastIP)) {
-                ROS_ERROR(
-                        "holy shit, I was not able to convert your broadcast IP, are you sure it is an IP like 192.168.0.255 ??!!!");
-                return -2;
-            }
-            receiver_socket.reset();
-            receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, broadcastIP));
-            ROS_INFO("Starting IP receiver with Host IP: %s:%d and broadcastIP: %s", argv[1],BROADCAST_PORT, argv[2]);
-            break;
-        default:
-            ROS_ERROR("USAGE: rosrun common_utilities IPreceiver 192.168.0.255");
-            ROS_INFO("Please supply broadcast IP");
-            return -1;
-    }
-
-    ros::Rate rate(1);
-    char hostname[20];
-    while(ros::ok()){
-        ROS_INFO_THROTTLE(10,"listening for HOST IP");
-        host_IP = receiver_socket->receiveHostIP(hostname);
-        if(host_IP!=0){
-            char IP[4];
+    UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, false));
+    uint32_t status = 0;
+    while(status!=3 && !ros::master::check()){
+        usleep(1000000);
+        printf("listening for HOST IP\n");
+        uint32_t host_IP;
+        status = receiver_socket->receiveHostIP(key,host_IP);
+        if(status==3){
+            char IP[16];
             receiver_socket->convertByte2Text(host_IP,IP);
-            ROS_INFO("Received HOST IP: %s from %s",IP, hostname);
+            ROS_INFO("Received HOST IP: %s",IP);
+            char ros_master_uri[100];
+            sprintf(ros_master_uri, "ROS_MASTER_URI=http://%s:11311",IP);
+            printf("%s\n",ros_master_uri);
+            putenv(ros_master_uri);
         }
-        rate.sleep();
     }
+
+    system (argv[1]);
 }
