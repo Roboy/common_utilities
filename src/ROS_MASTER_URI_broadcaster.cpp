@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
     if (!ros::isInitialized()) {
         int argc = 0;
         char **argv = NULL;
-        ros::init(argc, argv, "IPbroadcaster");
+        ros::init(argc, argv, "ROS_MASTER_URI_broadcaster");
     }
 
     char hostname[20];

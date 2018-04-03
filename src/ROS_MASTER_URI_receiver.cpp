@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
     if (!ros::isInitialized()) {
         int argc = 0;
         char **argv = NULL;
-        ros::init(argc, argv, "IPreceiver");
+        ros::init(argc, argv, "ROS_MASTER_URI_receiver");
     }
     // create the IP broadcast Socket
     UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, false));
