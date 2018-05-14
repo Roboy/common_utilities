@@ -300,7 +300,7 @@ bool UDPSocket::broadcastHostIP(char *key, int length){
 
 bool UDPSocket::receiveSensorData(vector<uint32_t> &sensorID, vector<bool> &lighthouse, vector<bool> &axis, vector<uint32_t> &sweepDuration){
     if(receiveUDP()){
-        if(numbytes == 32){
+        if(numbytes == 32){ // without timestamp
             union {
                 uint32_t sensor[8];
                 uint8_t data[32];
@@ -315,6 +315,34 @@ bool UDPSocket::receiveSensorData(vector<uint32_t> &sensorID, vector<bool> &ligh
 //                   BYTE_TO_BINARY(spi_frame.data[3]), BYTE_TO_BINARY(spi_frame.data[2]),
 //                   BYTE_TO_BINARY(spi_frame.data[1]), BYTE_TO_BINARY(spi_frame.data[0]));
             int j = 0;
+            for(uint i=0; i<8; i++){
+                uint32_t val = (uint32_t)((uint8_t)buf[j+3]<<24|(uint8_t)buf[j+2]<<16|(uint8_t)buf[j+1]<<8|(uint8_t)buf[j]);
+                int valid = (val >> 29) & 0x1;
+                if(!valid)
+                    continue;
+                lighthouse.push_back((val >> 31) & 0x1);
+                axis.push_back((val >> 30) & 0x1);
+                sensorID.push_back((val >>19) & 0x3FF);
+                sweepDuration.push_back((val & 0x7FFFF));
+                j+=4;
+            }
+            return !sensorID.empty();
+        }else if(numbytes == 34){ // with timestamp
+            union {
+                uint32_t sensor[8];
+                uint8_t data[32];
+            }spi_frame;
+            uint16_t timestamp = (uint16_t)(buf[1]<<8|buf[0]);
+            memcpy(spi_frame.data, &buf[2], 32);
+//            for(uint i = 0; i<32;i++){
+//                printf("%d ",buf[i]);
+//            }
+//            printf("\n");
+//            printf(BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN " "
+//                           BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN "\n",
+//                   BYTE_TO_BINARY(spi_frame.data[3]), BYTE_TO_BINARY(spi_frame.data[2]),
+//                   BYTE_TO_BINARY(spi_frame.data[1]), BYTE_TO_BINARY(spi_frame.data[0]));
+            int j = 2;
             for(uint i=0; i<8; i++){
                 uint32_t val = (uint32_t)((uint8_t)buf[j+3]<<24|(uint8_t)buf[j+2]<<16|(uint8_t)buf[j+1]<<8|(uint8_t)buf[j]);
                 int valid = (val >> 29) & 0x1;
