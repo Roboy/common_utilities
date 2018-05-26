@@ -10,7 +10,7 @@ argv = sys.argv
 argv = argv[argv.index("--") + 1:] # get all args after "--"
 
 if len(argv) < 3 & os.path.isdir(argv[0]) == False:
-  print('too few arguments, USAGE: path/to/stl outputpath/to/dae ratio[0-1]')
+  print('too few arguments, USAGE: blender --background --python reduce-stl-dae-bpy.py -- path/to/stl outputpath/to/dae ratio[0-1]')
 else:
 	print('input folder: ' + argv[0])
 	print('ouput folder: ' + argv[1])
