@@ -42,11 +42,14 @@ for root, dirs, files in os.walk(inputpath):
 
 			candidate_list = [item.name for item in bpy.data.objects if item.type == "MESH"]
 
-			obj = bpy.context.active_object
+			obj = bpy.data.objects[0]
 			pdb.set_trace()
+			obj.hide = False
+			obj.select = True
+
 			bpy.ops.object.modifier_add(type='DECIMATE')
 			bpy.data.objects['node'].modifiers["Decimate"].ratio=float(ratio)
 			bpy.ops.object.modifier_apply(modifier='DECIMATE')
 
-			bpy.ops.object.select_all(action='SELECT')
+			# bpy.ops.object.select_all(action='SELECT')
 			bpy.ops.wm.collada_export(filepath=dae_file)
