@@ -1,4 +1,10 @@
+'''
+Reduces all stl meshes in the folder and converts all of them to dae.
+Usage:
+blender --background --python reduce-stl-dae-bpy.py -- path/to/stl outputpath/to/dae ratio[0-1]
 
+using blender>=2.8
+'''
 import os
 import sys
 import pdb
