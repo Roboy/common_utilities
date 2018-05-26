@@ -24,6 +24,7 @@ for root, dirs, files in os.walk(inputpath):
 		if f.endswith('.stl') or f.endswith('.STL') :
 
 			mesh_file = os.path.join(inputpath, f)
+			name = os.path.splitext(f)[0].replace("_", " ").title()
 			dae_file = os.path.join(outputpath, os.path.splitext(f)[0]) + ".dae"
 
 			candidate_list = [item.name for item in bpy.data.objects if item.type == "MESH"]
@@ -31,19 +32,14 @@ for root, dirs, files in os.walk(inputpath):
 			for object_name in candidate_list:
 				bpy.data.objects.remove(bpy.data.objects[object_name], True)
 
-
-
 			bpy.ops.import_mesh.stl(filepath=mesh_file) 
+			
 			bpy.ops.object.mode_set(mode='OBJECT')
 			bpy.ops.object.mode_set(mode='EDIT')
-
-			for obj in bpy.context.selected_objects:
-				obj.name = "node"
-
-			obj = bpy.context.active_object
+			bpy.data.objects[name].select = True
 
 			bpy.ops.object.modifier_add(type='DECIMATE')
-			bpy.data.objects['node'].modifiers["Decimate"].ratio=float(ratio)
+			bpy.data.objects[name].modifiers["Decimate"].ratio=float(ratio)
 			bpy.ops.object.modifier_apply(modifier='DECIMATE')
-
-			bpy.ops.wm.collada_export(filepath=dae_file)
+			
+			bpy.ops.wm.collada_export(filepath=dae_file, apply_modifiers=True)
