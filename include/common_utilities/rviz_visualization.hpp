@@ -2,6 +2,7 @@
 
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <tf/tf.h>
@@ -116,8 +117,9 @@ public:
     void clearAll();
 private:
     ros::NodeHandlePtr nh;
-    ros::Publisher visualization_pub;
     static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
     static interactive_markers::MenuHandler menu_handler;
     static bool first;
+public:
+    ros::Publisher visualization_pub, visualization_array_pub;
 };

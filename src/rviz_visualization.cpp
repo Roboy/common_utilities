@@ -13,6 +13,7 @@ rviz_visualization::rviz_visualization() {
     }
     nh = ros::NodeHandlePtr(new ros::NodeHandle);
     visualization_pub = nh->advertise<visualization_msgs::Marker>("visualization_marker", 1);
+    visualization_array_pub = nh->advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
 
     if(first){
         first = false;
