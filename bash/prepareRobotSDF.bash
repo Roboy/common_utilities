@@ -10,6 +10,12 @@ else
       cd $currentworkingdirectory
       exit 1
     fi
+    check_urdf model.urdf
+    if [ $? -ne 0 ]; then
+      echo "urdf check failed, check your sdf"
+      cd $currentworkingdirectory
+      exit 1
+    fi
     projectname=$(ls model.urdf|sed -e "s/.urdf//")
     read -r -p "reduce meshes? [y/n] " response
     response=${response,,}    # tolower
