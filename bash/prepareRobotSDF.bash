@@ -16,7 +16,7 @@ else
       cd $currentworkingdirectory
       exit 1
     fi
-    projectname=$(ls model.urdf|sed -e "s/.urdf//")
+    projectname=$(echo $1| cut -d "/" -f4)
     read -r -p "reduce meshes? [y/n] " response
     response=${response,,}    # tolower
     if [[ $response =~ ^(yes|y)$ ]]; then
@@ -29,6 +29,15 @@ else
           exit 1
         fi
     fi
+    ls ~/.gazebo/models/$projectname
+    if [ $? -ne 0 ]; then
+      read -r -p "create symbolic link to gazebo models? [y/n] " response
+      response=${response,,}    # tolower
+      if [[ $response =~ ^(yes|y)$ ]]; then
+        ln -s $currentworkingdirectory/$1 ~/.gazebo/models/$projectname
+      fi
+    fi
+
     echo DONE
     cd $currentworkingdirectory
 fi 
