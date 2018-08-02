@@ -7,11 +7,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <common_utilities/CommonDefinitions.h>
 
 using namespace std;
 
 class MotorConfig{
 public:
+    MotorConfig();
     /**
      * Reads a yaml motor config file
      * @param filepath to config
@@ -33,17 +35,19 @@ public:
     /**
      * Transforms displacement to force using loaded coefficients
      * @param displacement
+     * @param fpga for this fpga
      * @param motor motor id (as listed in read config)
      * @return force
      */
-    double displacement2force(double displacement, int motor);
+    double displacement2force(double displacement, int fpga, int motor);
     /**
      * Transforms force to displacement using loaded coefficients
      * @param displacement
+     * @param fpga for this fpga
      * @param motor motor id (as listed in read config)
      * @return force
      */
-    double force2displacement(double force, int motor);
+    double force2displacement(double force, int fpga, int motor);
 
-    map<int, vector<float>> coeffs_displacement2force, coeffs_force2displacement;
+    vector<vector<vector<float>>> coeffs_displacement2force, coeffs_force2displacement;
 };
