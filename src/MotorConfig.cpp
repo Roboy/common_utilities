@@ -10,8 +10,10 @@ MotorConfig::MotorConfig(){
 }
 
 bool MotorConfig::readConfig(const string &filepath){
-    if(!fileExists(filepath))
+    if(!fileExists(filepath)) {
+        ROS_ERROR_STREAM(filepath << " does not exist, check your path");
         return false;
+    }
     YAML::Node config = YAML::LoadFile(filepath);
     for(int fpga=0;fpga<NUMBER_OF_FPGAS;fpga++) {
         char str[200];
@@ -123,16 +125,16 @@ bool MotorConfig::fileExists(const string &filepath){
 }
 
 double MotorConfig::displacement2force(double displacement, int fpga, int motor){
-    double force = coeffs_displacement2force[fpga][motor][0];
-    for (uint i = 1; i < coeffs_displacement2force[fpga][motor].size(); i++) {
+    double force = 0;
+    for (uint i = 0; i < coeffs_displacement2force[fpga][motor].size(); i++) {
         force += coeffs_displacement2force[fpga][motor][i] * pow(displacement, (double) i);
     }
     return force;
 }
 
 double MotorConfig::force2displacement(double force, int fpga, int motor){
-    double displacement = coeffs_force2displacement[fpga][motor][0];
-    for (uint i = 1; i < coeffs_force2displacement[fpga][motor].size(); i++) {
+    double displacement = 0;
+    for (uint i = 0; i < coeffs_force2displacement[fpga][motor].size(); i++) {
         displacement += coeffs_force2displacement[fpga][motor][i] * pow(force, (double) i);
     }
     return displacement;
