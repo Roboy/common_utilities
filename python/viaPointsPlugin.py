@@ -57,8 +57,8 @@ class ViaPointInfoOperator(bpy.types.Operator):
 #    ui
 # ------------------------------------------------------------------------
 
-sdf_file = "/home/letrend/workspace/roboy-ros-control/src/roboy_models/legs_with_muscles_simplified/model.sdf"
-stl_dir = "/home/letrend/workspace/roboy-ros-control/src/roboy_models/legs_with_muscles_simplified/cad"
+sdf_file = "/home/roboy/PaBiRoboy/model.sdf"
+stl_dir = "/home/roboy/PaBiRoboy/meshes"
 
 class FilePath(PropertyGroup):
     sdf_file = StringProperty(
@@ -97,6 +97,11 @@ class OBJECT_PT_my_panel(Panel):
         col.operator("my.accept_viapoint", text="accept viaPoint")
         col.operator("wm.viapoint_info")
 
+        global sdf_file
+        global stl_dir
+        sdf_file = scn.sdf_file.sdf_file
+        stl_dir = scn.stl_dir.stl_dir
+
 #   load meshes Button
 class OBJECT_OT_Button(bpy.types.Operator):
     bl_idname = "my.load_meshes_button"
@@ -110,8 +115,7 @@ class OBJECT_OT_Button(bpy.types.Operator):
                 meshes.add(l.attrib['name'])
 
         for mesh in meshes:
-            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}],
-                                    directory=stl_dir)
+            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}], directory=stl_dir, global_scale=0.001)
         return {'FINISHED'}
 
 #   acquire_viaPoints Button

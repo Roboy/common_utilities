@@ -3,29 +3,25 @@ The reduceMeshesInDirectory.py is a helper script for reducing meshes of file ty
 
 ## Dependencies
 python3 blender 
-### Ubuntu14 
-(Ubuntu14 repo version does not work, use the newest [version](https://www.blender.org/download/) )
-Example: 
+### Ubuntu16 
 ```
 #!/bin/bash
-tar xf /path/to/blender-2.77a-linux-glibc211-x86_64.tar.bz2
-sudo mv blender-2.77a-linux-glibc211-x86_64/ /opt/blender
-sudo ln -s /opt/blender/blender /usr/local/bin/blender
+sudo apt install blender
 ```
 ## Usage
 Example directory:
 ```
 #!/bin/bash
-python3 reduceMeshesInDirectory.py /home/letrend/workspace/poseestimator/models/roboy/dae/ /home/letrend/workspace/poseestimator/models/roboy_simplified/dae/ 0.1
+python reduceMeshesInDirectory.py ~/workspace/roboy_models/Roboy2.0/meshes/CAD/ ~/workspace/roboy_models/Roboy2.0/meshes/CAD 0.1 1
 ```
-The first two parameters define paths to input/output directories, the last parameters defines the ratio of mesh reduction (c.f. [decimate modifier](https://www.blender.org/manual/modeling/modifiers/generate/decimate.html)). The script search through the input directory and transforms every .dae file to a .dae file with the same name into the output directory. NOTE: mind the additional '/' in the input/output paths.
+The first two parameters define paths to input/output directories, the last parameters defines the ratio of mesh reduction (c.f. [decimate modifier](https://www.blender.org/manual/modeling/modifiers/generate/decimate.html)). The script search through the input directory and transforms every .stl file to a .stl file with the same name into the output directory. NOTE: mind the additional '/' in the input/output paths. The last parameter is the scale. 
 
 Example single file:
 ```
 #!/bin/bash
-python3 reduceMeshSingleFile.py ~/workspace/poseestimator/models/roboy/dae/p-oberschenkel-v02.dae ~/workspace/poseestimator/models/roboy_simplified/dae/p-oberschenkel-v02.dae 0.05
+python reduceMeshSingleFile.py ../../roboy_models/Roboy2.0_Head_simplified/meshes/CAD/torso.stl ../../roboy_models/Roboy2.0_Head_simplified/meshes/CAD/torso.stl 0.1 1
 ```
-The first two parameters define paths to input/output .dae file, while the thir parameter defines the ratio of mesh reduction.
+The first two parameters define paths to input/output .dae file, while the thir parameter defines the ratio of mesh reduction, the last parameter is the scale.
 
 ## Note
 There are no sanity checks regarding your original files. They will be overwritten, if you set the output directory to your input directory!

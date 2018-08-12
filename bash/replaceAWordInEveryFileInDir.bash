@@ -3,7 +3,7 @@ if [ "$#" -ne 3 ]; then
     echo "USAGE:     ./replaceAWordInEveryFileInDir.bash path/to/directory wordToReplace wordToReplaceWith"
     echo "EXAMPLE:   ls . -R"
     echo "           .:"	     
-    echo "           fuckYou.bash  renameAllFilesInDirectory.bash  replaceAWordInEveryFileInDir.bash"
+    echo "           fuckYou.bash  replaceAWordInEveryFileInDirectory.bash  replaceAWordInEveryFileInDir.bash"
     echo "           cat fuckYou.bash"
     echo "           why?"
     echo "           ./replaceAWordInEveryFileInDir.bash . why? because!"
