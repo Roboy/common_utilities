@@ -38,8 +38,6 @@ else:
   for obj in bpy.context.selected_objects:
     obj.name = "node"
 
-  candidate_list = [item.name for item in bpy.data.objects if item.type == "MESH"]
-
   obj = bpy.context.active_object
 
   bpy.ops.object.modifier_add(type='DECIMATE')

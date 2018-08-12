@@ -124,7 +124,7 @@ class OBJECT_OT_Button(bpy.types.Operator):
                 #bpy.data.objects['node'].name = meshname
                 #poses2[meshname] = poses[mesh]
             #else:
-            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".STL"}], directory=mesh_dir)
+            bpy.ops.import_mesh.stl(files=[{"name": mesh + ".stl"}], directory=mesh_dir)
 
         #poses = poses2
         for obj in bpy.data.objects:
