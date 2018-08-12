@@ -39,13 +39,13 @@ There are no sanity checks regarding your original files. They will be overwritt
 Also reducing the mesh faces below some value will degenerate your mesh. To avoid this you can try different values first in blender.
 
 
-#### ReduceAndExportSeperatelyAsObj
+#### ReduceAndExportSeparatelyAsObj
 
 This file reads in all .stl files in the specified folder or the file itself -depending on what was specified- and imports it. Then, it applies the specified reduction scale by which the number of vertices is reduced. Finally, the scale is applied to the models which are then exported separately as individual .obj files. The file name consists of the object name, written in lowercase and words separated by '_'. The corresponding .mtl are deleted since these are not needed. The original files are not changed neither overwritten. This script needs to be run in blender, one exemplary use case can be seen here:
 
 	import sys
-	sys.argv = ['/home/roboy/workspace/common_utilities/python/reduceAndExportSeperatelyAsObj.py', '/home/roboy/workspace/roboy_models/roboy_xylophone_left_arm/meshes/CAD/', '/home/roboy/workspace/DartTracker/src/dart_tracker/models/roboy_xylophone_left_arm/meshes/', 0.3, 0.001]
-	exec(open('/home/roboy/workspace/common_utilities/python/reduceAndExportSeperatelyAsObj.py').read())
+	sys.argv = ['/home/roboy/workspace/common_utilities/python/reduceAndExportSeparatelyAsObj.py', '/home/roboy/workspace/roboy_models/roboy_xylophone_left_arm/meshes/CAD/', '/home/roboy/workspace/DartTracker/src/dart_tracker/models/roboy_xylophone_left_arm/meshes/', 0.3, 0.001]
+	exec(open('/home/roboy/workspace/common_utilities/python/reduceAndExportSeparatelyAsObj.py').read())
 
 
 #### SdfToXml 
