@@ -8,6 +8,7 @@
 #include <tf/tf.h>
 #include <interactive_markers/menu_handler.h>
 #include <interactive_markers/interactive_marker_server.h>
+#include <geometry_msgs/Pose.h>
 
 using namespace Eigen;
 
@@ -52,6 +53,20 @@ public:
      * @param duration in seconds
      */
     void publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond& orientation,
+                     double scale, const char *frame, const char *ns, int message_id, double duration);
+    /**
+     * Publishes a mesh visualization marker
+     * @param package ros package in which this mesh is located
+     * @param relative_path the relative path inside that ros packae
+     * @param the mesh file name
+     * @param pose of mesh
+     * @param modelname name of the mesh.dae
+     * @param frame in this frame
+     * @param ns namespace
+     * @param message_id unique id
+     * @param duration in seconds
+     */
+    void publishMesh(const char * package, const char* relative_path, const char *modelname, geometry_msgs::Pose &pose,
                      double scale, const char *frame, const char *ns, int message_id, double duration);
 
     /**
