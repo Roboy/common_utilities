@@ -39,6 +39,8 @@ public:
     Vector3d convertGeometryToEigen(const geometry_msgs::Vector3 &vector_in);
     geometry_msgs::Vector3 convertEigenToGeometry(const Vector3d &vector_in);
 
+    void PoseMsgToTF(const geometry_msgs::Pose& msg, tf::Transform& bt);
+
     /**
      * Publishes a mesh visualization marker
      * @param package ros package in which this mesh is located

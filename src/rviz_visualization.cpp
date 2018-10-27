@@ -182,10 +182,10 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
         control.orientation.x = 0;
         control.orientation.y = 1;
         control.orientation.z = 0;
-        control.name = "rotate_z";
+        control.name = "rotate_y";
         control.interaction_mode = InteractiveMarkerControl::ROTATE_AXIS;
         int_marker.controls.push_back(control);
-        control.name = "move_z";
+        control.name = "move_y";
         control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
         int_marker.controls.push_back(control);
 
@@ -193,10 +193,10 @@ void rviz_visualization::make6DofMarker( bool fixed, unsigned int interaction_mo
         control.orientation.x = 0;
         control.orientation.y = 0;
         control.orientation.z = 1;
-        control.name = "rotate_y";
+        control.name = "rotate_z";
         control.interaction_mode = InteractiveMarkerControl::ROTATE_AXIS;
         int_marker.controls.push_back(control);
-        control.name = "move_y";
+        control.name = "move_z";
         control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
         int_marker.controls.push_back(control);
     }
@@ -222,6 +222,15 @@ Vector3d rviz_visualization::convertGeometryToEigen(const geometry_msgs::Vector3
     vector_out[1] = vector_in.y;
     vector_out[2] = vector_in.z;
     return vector_out;
+}
+
+void rviz_visualization::PoseMsgToTF(const geometry_msgs::Pose& msg, tf::Transform& bt)
+{
+    bt = tf::Transform(tf::Quaternion(msg.orientation.x,
+                              msg.orientation.y,
+                              msg.orientation.z,
+                              msg.orientation.w),
+                       tf::Vector3(msg.position.x, msg.position.y, msg.position.z));
 }
 
 void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond &orientation,
