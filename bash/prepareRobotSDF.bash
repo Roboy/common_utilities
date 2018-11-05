@@ -22,7 +22,7 @@ else
     if [[ $response =~ ^(yes|y)$ ]]; then
 	    datetimestring=$(date +'%d%m%Y_%H-%M')
 	    cd $currentworkingdirectory/../python
-        python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.1 1
+        python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
         if [ $? -ne 0 ]; then
           echo failed to reduce meshes...got blender?
           cd $currentworkingdirectory
