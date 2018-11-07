@@ -234,15 +234,15 @@ void rviz_visualization::PoseMsgToTF(const geometry_msgs::Pose& msg, tf::Transfo
 }
 
 void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond &orientation,
-                                     double scale, const char *frame, const char *ns, int message_id, double duration, double opacity) {
+                                     double scale, const char *frame, const char *ns, int message_id, double duration, COLOR color) {
     visualization_msgs::Marker mesh;
     mesh.header.frame_id = frame;
     mesh.ns = ns;
     mesh.type = visualization_msgs::Marker::MESH_RESOURCE;
-    mesh.color.r = 1.0f;
-    mesh.color.g = 1.0f;
-    mesh.color.b = 1.0f;
-    mesh.color.a = opacity;
+    mesh.color.r = color.r;
+    mesh.color.g = color.g;
+    mesh.color.b = color.b;
+    mesh.color.a = color.a;
     mesh.scale.x = scale;
     mesh.scale.y = scale;
     mesh.scale.z = scale;
@@ -264,15 +264,15 @@ void rviz_visualization::publishMesh(const char * package, const char* relative_
 };
 
 void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, geometry_msgs::Pose &pose,
-                 double scale, const char *frame, const char *ns, int message_id, double duration, double opacity){
+                 double scale, const char *frame, const char *ns, int message_id, double duration, COLOR color){
     visualization_msgs::Marker mesh;
     mesh.header.frame_id = frame;
     mesh.ns = ns;
     mesh.type = visualization_msgs::Marker::MESH_RESOURCE;
-    mesh.color.r = 1.0f;
-    mesh.color.g = 1.0f;
-    mesh.color.b = 1.0f;
-    mesh.color.a = opacity;
+    mesh.color.r = color.r;
+    mesh.color.g = color.g;
+    mesh.color.b = color.b;
+    mesh.color.a = color.a;
     mesh.scale.x = scale;
     mesh.scale.y = scale;
     mesh.scale.z = scale;

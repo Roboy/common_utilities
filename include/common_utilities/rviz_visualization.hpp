@@ -53,10 +53,10 @@ public:
      * @param ns namespace
      * @param message_id unique id
      * @param duration in seconds
-     * @param opacity of the mesh
+     * @param color of the mesh
      */
     void publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond& orientation,
-                     double scale, const char *frame, const char *ns, int message_id, double duration = 0, double opacity = 1.0);
+                     double scale, const char *frame, const char *ns, int message_id, double duration = 0, COLOR color = COLOR(1,1,1,1));
     /**
      * Publishes a mesh visualization marker
      * @param package ros package in which this mesh is located
@@ -68,10 +68,10 @@ public:
      * @param ns namespace
      * @param message_id unique id
      * @param duration in seconds
-     * @param opacity of the mesh
+     * @param color of the mesh
      */
     void publishMesh(const char * package, const char* relative_path, const char *modelname, geometry_msgs::Pose &pose,
-                     double scale, const char *frame, const char *ns, int message_id, double duration = 0, double opacity = 1.0);
+                     double scale, const char *frame, const char *ns, int message_id, double duration = 0, COLOR color = COLOR(1,1,1,1));
 
     /**
      * Publishes a sphere visualization marker
