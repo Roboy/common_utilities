@@ -139,6 +139,9 @@ private:
     static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
     static interactive_markers::MenuHandler menu_handler;
     static bool first;
+    visualization_msgs::MarkerArray marker_array;
 public:
     ros::Publisher visualization_pub, visualization_array_pub;
+    bool publish_as_marker_array = false;
+    int number_of_markers_to_publish_at_once = 100;
 };

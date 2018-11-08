@@ -260,7 +260,15 @@ void rviz_visualization::publishMesh(const char * package, const char* relative_
     char meshpath[200];
     sprintf(meshpath, "package://%s/%s/%s",package, relative_path, modelname);
     mesh.mesh_resource = meshpath;
-    visualization_pub.publish(mesh);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(mesh);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(mesh);
+    }
 };
 
 void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, geometry_msgs::Pose &pose,
@@ -284,7 +292,15 @@ void rviz_visualization::publishMesh(const char * package, const char* relative_
     char meshpath[200];
     sprintf(meshpath, "package://%s/%s/%s",package, relative_path, modelname);
     mesh.mesh_resource = meshpath;
-    visualization_pub.publish(mesh);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(mesh);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(mesh);
+    }
 }
 
 void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const char *ns, int message_id, COLOR color,
@@ -312,7 +328,15 @@ void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const c
     sphere.pose.orientation.y = 0;
     sphere.pose.orientation.z = 0;
     sphere.pose.orientation.w = 1;
-    visualization_pub.publish(sphere);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(sphere);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(sphere);
+    }
 };
 
 void rviz_visualization::publishCube(Vector3d &pos, Vector4d &quat, const char *frame, const char *ns, int message_id,
@@ -339,7 +363,15 @@ void rviz_visualization::publishCube(Vector3d &pos, Vector4d &quat, const char *
     cube.pose.orientation.y = quat(1);
     cube.pose.orientation.z = quat(2);
     cube.pose.orientation.w = quat(3);
-    visualization_pub.publish(cube);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(cube);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(cube);
+    }
 };
 
 void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const char* ns, int message_id,
@@ -366,7 +398,15 @@ void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const
     cylinder.pose.orientation.y = 0;
     cylinder.pose.orientation.z = 0;
     cylinder.pose.orientation.w = 1;
-    visualization_pub.publish(cylinder);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(cylinder);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(cylinder);
+    }
 }
 
 void rviz_visualization::publishRay(Vector3d &pos, Vector3d &dir, const char *frame, const char *ns, int message_id,
@@ -397,7 +437,15 @@ void rviz_visualization::publishRay(Vector3d &pos, Vector3d &dir, const char *fr
     p.y += dir(1);
     p.z += dir(2);
     arrow.points.push_back(p);
-    visualization_pub.publish(arrow);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(arrow);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(arrow);
+    }
 };
 
 void rviz_visualization::publishText(Vector3d &pos, const char *text, const char *frame, const char *ns, int message_id,
@@ -423,7 +471,15 @@ void rviz_visualization::publishText(Vector3d &pos, const char *text, const char
     text_msg.pose.orientation.z = 0;
     text_msg.pose.orientation.w = 1;
     text_msg.text = text;
-    visualization_pub.publish(text_msg);
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(text_msg);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(text_msg);
+    }
 };
 
 void rviz_visualization::clearAll() {
