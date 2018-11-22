@@ -9,7 +9,7 @@
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <depend>message_runtime</depend>
-  <depend>roboy_communication_middleware</depend>
+  <depend>roboy_middleware_msgs</depend>
 
   <buildtool_depend>catkin</buildtool_depend>  
 <!-- The export tag contains other, unspecified, tags -->
