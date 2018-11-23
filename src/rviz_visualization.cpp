@@ -323,7 +323,39 @@ void rviz_visualization::publishSphere(Vector3d &pos, const char *frame, const c
     sphere.pose.position.x = pos(0);
     sphere.pose.position.y = pos(1);
     sphere.pose.position.z = pos(2);
-    sphere.pose.position.z = pos(2);
+    sphere.pose.orientation.x = 0;
+    sphere.pose.orientation.y = 0;
+    sphere.pose.orientation.z = 0;
+    sphere.pose.orientation.w = 1;
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(sphere);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(sphere);
+    }
+};
+
+void rviz_visualization::publishSphere(geometry_msgs::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
+                                       float radius, double duration) {
+    visualization_msgs::Marker sphere;
+    sphere.header.frame_id = frame;
+    sphere.ns = ns;
+    sphere.type = visualization_msgs::Marker::SPHERE;
+    sphere.color.r = color.r;
+    sphere.color.g = color.g;
+    sphere.color.b = color.b;
+    sphere.color.a = color.a;
+    sphere.lifetime = ros::Duration(duration);
+    sphere.scale.x = radius;
+    sphere.scale.y = radius;
+    sphere.scale.z = radius;
+    sphere.action = visualization_msgs::Marker::ADD;
+    sphere.header.stamp = ros::Time::now();
+    sphere.id = message_id;
+    sphere.pose.position = pose.position;
     sphere.pose.orientation.x = 0;
     sphere.pose.orientation.y = 0;
     sphere.pose.orientation.z = 0;
@@ -373,6 +405,35 @@ void rviz_visualization::publishCube(Vector3d &pos, Vector4d &quat, const char *
         visualization_pub.publish(cube);
     }
 };
+
+void rviz_visualization::publishCube(geometry_msgs::Pose &pose, const char* frame, const char* ns,
+                                     int message_id, COLOR color,float radius, double duration){
+    visualization_msgs::Marker cube;
+    cube.header.frame_id = frame;
+    cube.ns = ns;
+    cube.type = visualization_msgs::Marker::CUBE;
+    cube.color.r = color.r;
+    cube.color.g = color.g;
+    cube.color.b = color.b;
+    cube.color.a = color.a;
+    cube.lifetime = ros::Duration(duration);
+    cube.scale.x = radius;
+    cube.scale.y = radius;
+    cube.scale.z = radius;
+    cube.action = visualization_msgs::Marker::ADD;
+    cube.header.stamp = ros::Time::now();
+    cube.id = message_id;
+    cube.pose = pose;
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(cube);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(cube);
+    }
+}
 
 void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const char* ns, int message_id,
                                          COLOR color, float radius, double duration){
@@ -488,4 +549,24 @@ void rviz_visualization::clearAll() {
     marker.id = 0;
     marker.action = visualization_msgs::Marker::DELETEALL;
     visualization_pub.publish(marker);
+}
+
+bool rviz_visualization::getTransform(string from, string to, geometry_msgs::Pose &pose){
+    tf::StampedTransform trans;
+    try {
+        if (listener.waitForTransform(from.c_str(), to.c_str(),
+                                      ros::Time(0), ros::Duration(0.0001))) {
+            listener.lookupTransform(from.c_str(), to.c_str(),
+                                     ros::Time(0), trans);
+            tf::poseTFToMsg(trans,pose);
+        } else {
+            ROS_ERROR("transform %s->%s is not available", from.c_str(), to.c_str());
+            return false;
+        }
+    }
+    catch (tf::LookupException ex) {
+        ROS_WARN("%s", ex.what());
+        return false;
+    }
+    return true;
 }

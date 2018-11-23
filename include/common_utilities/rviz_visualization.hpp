@@ -6,9 +6,11 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <tf/tf.h>
+#include <tf/transform_listener.h>
 #include <interactive_markers/menu_handler.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <geometry_msgs/Pose.h>
+#include <string>
 
 using namespace Eigen;
 
@@ -18,6 +20,7 @@ struct COLOR{
 };
 
 using namespace visualization_msgs;
+using std::string;
 
 class rviz_visualization{
 public:
@@ -85,6 +88,17 @@ public:
     void publishSphere(Vector3d &pos, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
 
     /**
+     * Publishes a sphere visualization marker
+     * @param pose at this positon
+     * @param frame in this frame
+     * @param ns namespace
+     * @param message_id a unique id
+     * @param rgda rgb color (0-1) plus transparancy
+     * @param duration for this duration in seconds (0=forever)
+     */
+    void publishSphere(geometry_msgs::Pose &pose, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+
+    /**
      * Publishes a cube visualization marker
      * @param pos at this positon
      * @param quat with this orientation
@@ -95,6 +109,17 @@ public:
      * @param duration for this duration in seconds (0=forever)
      */
     void publishCube(Vector3d &pos, Vector4d &quat, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+
+    /**
+     * Publishes a cube visualization marker
+     * @param pose with this pose
+     * @param frame in this frame
+     * @param ns namespace
+     * @param message_id a unique id
+     * @param rgda rgb color (0-1) plus transparancy
+     * @param duration for this duration in seconds (0=forever)
+     */
+    void publishCube(geometry_msgs::Pose &pose, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
 
     /**
      * Publishes a cylinder visualization marker
@@ -134,12 +159,21 @@ public:
      * Clears all markers in rviz
      */
     void clearAll();
+    /**
+     * Gets a tf transform
+     * @param from source frame
+     * @param to target frame
+     * @param pose will be filled with the transform
+     * @return success
+     */
+    bool getTransform(string from, string to, geometry_msgs::Pose &pose);
 private:
     ros::NodeHandlePtr nh;
     static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
     static interactive_markers::MenuHandler menu_handler;
     static bool first;
     visualization_msgs::MarkerArray marker_array;
+    tf::TransformListener listener;
 public:
     ros::Publisher visualization_pub, visualization_array_pub;
     bool publish_as_marker_array = false;
