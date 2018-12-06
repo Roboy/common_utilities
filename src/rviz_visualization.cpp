@@ -551,14 +551,14 @@ void rviz_visualization::clearAll() {
     visualization_pub.publish(marker);
 }
 
-bool rviz_visualization::getTransform(string from, string to, geometry_msgs::Pose &pose){
+bool rviz_visualization::getTransform(string from, string to, geometry_msgs::Pose &transform){
     tf::StampedTransform trans;
     try {
         if (listener.waitForTransform(from.c_str(), to.c_str(),
                                       ros::Time(0), ros::Duration(0.0001))) {
             listener.lookupTransform(from.c_str(), to.c_str(),
                                      ros::Time(0), trans);
-            tf::poseTFToMsg(trans,pose);
+            tf::poseTFToMsg(trans,transform);
         } else {
             ROS_ERROR("transform %s->%s is not available", from.c_str(), to.c_str());
             return false;
@@ -568,5 +568,21 @@ bool rviz_visualization::getTransform(string from, string to, geometry_msgs::Pos
         ROS_WARN("%s", ex.what());
         return false;
     }
+    return true;
+}
+
+bool rviz_visualization::getTransform(string from, string to, Matrix4d &transform){
+    tf::StampedTransform trans;
+    try {
+        listener.lookupTransform(from.c_str(), to.c_str(), ros::Time(0), trans);
+    }
+    catch (tf::TransformException ex) {
+        ROS_WARN_THROTTLE(1,"%s", ex.what());
+        return false;
+    }
+
+    Eigen::Affine3d trans_;
+    tf::transformTFToEigen(trans, trans_);
+    transform = trans_.matrix();
     return true;
 }
