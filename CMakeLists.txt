@@ -41,7 +41,7 @@ add_library( rviz_visualization src/rviz_visualization.cpp )
 target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
 
 add_library( MotorConfig src/MotorConfig.cpp )
-add_dependencies( MotorConfig roboy_communication_middleware_gencpp)
+add_dependencies( MotorConfig roboy_middleware_msgs_gencpp)
 target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
 
 add_executable( rfid_unlocker src/rfid_unlocker.cpp )
