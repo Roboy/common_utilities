@@ -586,3 +586,16 @@ bool rviz_visualization::getTransform(string from, string to, Matrix4d &transfor
     transform = trans_.matrix();
     return true;
 }
+
+bool rviz_visualization::publishTransform(string from, string to, geometry_msgs::Pose &transform){
+    static geometry_msgs::TransformStamped msg;
+    msg.header.stamp = ros::Time::now();
+    msg.header.frame_id = from;
+    msg.header.seq++;
+    msg.child_frame_id = to;
+    msg.transform.rotation = transform.orientation;
+    msg.transform.translation.x = transform.position.x;
+    msg.transform.translation.y = transform.position.y;
+    msg.transform.translation.z = transform.position.z;
+    broadcaster.sendTransform(msg);
+}
