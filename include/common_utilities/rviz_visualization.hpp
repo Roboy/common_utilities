@@ -7,6 +7,8 @@
 #include <Eigen/Dense>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
+#include <tf/transform_broadcaster.h>
+#include <tf_conversions/tf_eigen.h>
 #include <interactive_markers/menu_handler.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <geometry_msgs/Pose.h>
@@ -163,10 +165,26 @@ public:
      * Gets a tf transform
      * @param from source frame
      * @param to target frame
-     * @param pose will be filled with the transform
+     * @param transform will be filled with the transform
      * @return success
      */
-    bool getTransform(string from, string to, geometry_msgs::Pose &pose);
+    bool getTransform(string from, string to, geometry_msgs::Pose &transform);
+    /**
+     * Gets a tf transform
+     * @param from source frame
+     * @param to target frame
+     * @param transform will be filled with the transform
+     * @return success
+     */
+    bool getTransform(string from, string to, Matrix4d &transform);
+    /**
+     * Publishes a tf transform
+     * @param from source frame
+     * @param to target frame
+     * @param transform
+     * @return success
+     */
+    bool publishTransform(string from, string to, geometry_msgs::Pose &transform);
 private:
     ros::NodeHandlePtr nh;
     static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
@@ -174,6 +192,7 @@ private:
     static bool first;
     visualization_msgs::MarkerArray marker_array;
     tf::TransformListener listener;
+    tf::TransformBroadcaster broadcaster;
 public:
     ros::Publisher visualization_pub, visualization_array_pub;
     bool publish_as_marker_array = false;

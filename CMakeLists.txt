@@ -10,7 +10,7 @@ SET(CMAKE_BUILD_TYPE Debug)
 #==============================================================================
 # Dependencies
 #==============================================================================
-find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers visualization_msgs roboy_middleware_msgs)
+find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers tf tf_conversions visualization_msgs roboy_middleware_msgs)
 catkin_package(CATKIN_DEPENDS message_runtime INCLUDE_DIRS include
         LIBRARIES rviz_visualization UDPSocket MotorConfig)
 
