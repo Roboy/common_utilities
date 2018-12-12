@@ -560,7 +560,7 @@ bool rviz_visualization::getTransform(string from, string to, geometry_msgs::Pos
                                      ros::Time(0), trans);
             tf::poseTFToMsg(trans,transform);
         } else {
-            ROS_ERROR("transform %s->%s is not available", from.c_str(), to.c_str());
+            ROS_WARN_THROTTLE(10,"transform %s->%s is not available", from.c_str(), to.c_str());
             return false;
         }
     }
@@ -577,7 +577,7 @@ bool rviz_visualization::getTransform(string from, string to, Matrix4d &transfor
         listener.lookupTransform(from.c_str(), to.c_str(), ros::Time(0), trans);
     }
     catch (tf::TransformException ex) {
-        ROS_WARN_THROTTLE(1,"%s", ex.what());
+        ROS_WARN_THROTTLE(10,"%s", ex.what());
         return false;
     }
 
