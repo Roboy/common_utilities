@@ -22,13 +22,28 @@ else
     if [[ $response =~ ^(yes|y)$ ]]; then
 	    datetimestring=$(date +'%d%m%Y_%H-%M')
 	    cd $currentworkingdirectory/../python
-        python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
+      read -r -p "use collada format? [y/n] " response
+      response=${response,,}    # tolower
+      collada=false
+      if [[ $response =~ ^(yes|y)$ ]]; then
+        collada=true
+      fi
+        blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" 0.2 "$collada"
+        # python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
         if [ $? -ne 0 ]; then
-          echo failed to reduce meshes...got blender?
+          echo failed to reduce meshes...got blender>=2.8?
           cd $currentworkingdirectory
           exit 1
         fi
+
+        read -r -p "use reduced meshes in model.sdf and model.urdf? [y/n] " response
+        response=${response,,}    # tolower
+        if [[ $response =~ ^(yes|y)$ ]]; then
+          python update_mesh_uri.py "$1/model.sdf" "$collada"
+          python update_mesh_uri.py "$1/model.urdf" "$collada"
+        fi
     fi
+
     ls ~/.gazebo/models/$projectname
     if [ $? -ne 0 ]; then
       read -r -p "create symbolic link to gazebo models? [y/n] " response
@@ -40,4 +55,4 @@ else
 
     echo DONE
     cd $currentworkingdirectory
-fi 
+fi
