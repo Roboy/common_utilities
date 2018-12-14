@@ -16,35 +16,38 @@
 
 using namespace Eigen;
 
-struct COLOR{
-    COLOR(float r, float g, float b, float a):r(r),g(g),b(b),a(a){};
-    float r,g,b,a;
+struct COLOR {
+    COLOR(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {};
+    float r, g, b, a;
 };
 
 using namespace visualization_msgs;
 using std::string;
 
-class rviz_visualization{
+class rviz_visualization {
 public:
     rviz_visualization();
+
     ~rviz_visualization();
 
-    static void processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback );
+    static void processFeedback(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback);
 
     void initializeInteractiveMarkerServer();
 
-    Marker makeBox( InteractiveMarker &msg );
+    Marker makeBox(InteractiveMarker &msg);
 
-    InteractiveMarkerControl& makeBoxControl( InteractiveMarker &msg );
+    InteractiveMarkerControl &makeBoxControl(InteractiveMarker &msg);
 
-    void make6DofMarker( bool fixed, unsigned int interaction_mode, const tf::Vector3& position,
-                         bool show_6dof, double scale=1, const char *frame="world", const char *name="interactive_marker",
-                         const char *description="for interaction and shit" );
+    void make6DofMarker(bool fixed, unsigned int interaction_mode, const tf::Vector3 &position,
+                        bool show_6dof, double scale = 1, const char *frame = "world",
+                        const char *name = "interactive_marker",
+                        const char *description = "for interaction and shit");
 
     Vector3d convertGeometryToEigen(const geometry_msgs::Vector3 &vector_in);
+
     geometry_msgs::Vector3 convertEigenToGeometry(const Vector3d &vector_in);
 
-    void PoseMsgToTF(const geometry_msgs::Pose& msg, tf::Transform& bt);
+    void PoseMsgToTF(const geometry_msgs::Pose &msg, tf::Transform &bt);
 
     /**
      * Publishes a mesh visualization marker
@@ -60,8 +63,11 @@ public:
      * @param duration in seconds
      * @param color of the mesh
      */
-    void publishMesh(const char * package, const char* relative_path, const char *modelname, Vector3d &pos, Quaterniond& orientation,
-                     double scale, const char *frame, const char *ns, int message_id, double duration = 0, COLOR color = COLOR(1,1,1,1));
+    void publishMesh(const char *package, const char *relative_path, const char *modelname, Vector3d &pos,
+                     Quaterniond &orientation,
+                     double scale, const char *frame, const char *ns, int message_id, double duration = 0,
+                     COLOR color = COLOR(1, 1, 1, 1));
+
     /**
      * Publishes a mesh visualization marker
      * @param package ros package in which this mesh is located
@@ -75,8 +81,9 @@ public:
      * @param duration in seconds
      * @param color of the mesh
      */
-    void publishMesh(const char * package, const char* relative_path, const char *modelname, geometry_msgs::Pose &pose,
-                     double scale, const char *frame, const char *ns, int message_id, double duration = 0, COLOR color = COLOR(1,1,1,1));
+    void publishMesh(const char *package, const char *relative_path, const char *modelname, geometry_msgs::Pose &pose,
+                     double scale, const char *frame, const char *ns, int message_id, double duration = 0,
+                     COLOR color = COLOR(1, 1, 1, 1));
 
     /**
      * Publishes a sphere visualization marker
@@ -87,7 +94,9 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishSphere(Vector3d &pos, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+    void
+    publishSphere(Vector3d &pos, const char *frame, const char *ns, int message_id, COLOR color, float radius = 0.01,
+                  double duration = 0);
 
     /**
      * Publishes a sphere visualization marker
@@ -98,7 +107,8 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishSphere(geometry_msgs::Pose &pose, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+    void publishSphere(geometry_msgs::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
+                       float radius = 0.01, double duration = 0);
 
     /**
      * Publishes a cube visualization marker
@@ -110,7 +120,8 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishCube(Vector3d &pos, Vector4d &quat, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+    void publishCube(Vector3d &pos, Vector4d &quat, const char *frame, const char *ns, int message_id, COLOR color,
+                     float radius = 0.01, double duration = 0);
 
     /**
      * Publishes a cube visualization marker
@@ -121,7 +132,8 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishCube(geometry_msgs::Pose &pose, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+    void publishCube(geometry_msgs::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
+                     float radius = 0.01, double duration = 0);
 
     /**
      * Publishes a cylinder visualization marker
@@ -132,7 +144,9 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishCylinder(Vector3d &pos, const char* frame, const char* ns, int message_id, COLOR color,float radius = 0.01, double duration=0);
+    void
+    publishCylinder(Vector3d &pos, const char *frame, const char *ns, int message_id, COLOR color, float radius = 0.01,
+                    double duration = 0);
 
     /**
      * Publishes a ray visualization marker
@@ -144,7 +158,9 @@ public:
      * @param color rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishRay(Vector3d &pos, Vector3d &dir, const char* frame, const char* ns, int message_id, COLOR color, double duration=0);
+    void publishRay(Vector3d &pos, Vector3d &dir, const char *frame, const char *ns, int message_id, COLOR color,
+                    double duration = 0);
+
     /**
      * Publishes a text message marker
      * @param pos at this positon
@@ -156,11 +172,14 @@ public:
      * @param duration for this duration in seconds (0=forever)
      * @param height height of the text
      */
-    void publishText(Vector3d &pos, const char *text, const char *frame, const char *ns, int message_id, COLOR color, double duration, float height);
+    void publishText(Vector3d &pos, const char *text, const char *frame, const char *ns, int message_id, COLOR color,
+                     double duration, float height);
+
     /**
      * Clears all markers in rviz
      */
     void clearAll();
+
     /**
      * Gets a tf transform
      * @param from source frame
@@ -169,6 +188,7 @@ public:
      * @return success
      */
     bool getTransform(string from, string to, geometry_msgs::Pose &transform);
+
     /**
      * Gets a tf transform
      * @param from source frame
@@ -177,6 +197,34 @@ public:
      * @return success
      */
     bool getTransform(string from, string to, Matrix4d &transform);
+
+    /**
+     * Queries the tf listener for the specified transform
+     * @param lighthouse
+     * @param to another frame
+     * @param transform the transform if available
+     * @return true if available
+     */
+    bool getLighthouseTransform(bool lighthouse, const char *to, Matrix4d &transform);
+
+    /**
+     * Queries the tf listener for the specified transform
+     * @param lighthouse
+     * @param from another frame
+     * @param transform the transform if available
+     * @return true if available
+     */
+    bool getLighthouseTransform(const char *from, bool lighthouse, Matrix4d &transform);
+
+    /**
+     * Queries the tf listener for the specified transform
+     * @param to this frame
+     * @param from another frame
+     * @param transform the transform if available
+     * @return true if available
+     */
+    bool getTransform(const char *from, const char *to, tf::Transform &transform);
+
     /**
      * Publishes a tf transform
      * @param from source frame
@@ -185,6 +233,7 @@ public:
      * @return success
      */
     bool publishTransform(string from, string to, geometry_msgs::Pose &transform);
+
 private:
     ros::NodeHandlePtr nh;
     static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;

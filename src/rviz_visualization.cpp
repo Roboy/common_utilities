@@ -571,6 +571,51 @@ bool rviz_visualization::getTransform(string from, string to, geometry_msgs::Pos
     return true;
 }
 
+bool rviz_visualization::getLighthouseTransform(bool lighthouse, const char *to, Matrix4d &transform){
+    tf::StampedTransform trans;
+    try {
+        listener.lookupTransform(to, (lighthouse?"lighthouse2":"lighthouse1"), ros::Time(0), trans);
+    }
+    catch (tf::TransformException ex) {
+        ROS_WARN_THROTTLE(1,"%s", ex.what());
+        return false;
+    }
+
+    Eigen::Affine3d trans_;
+    tf::transformTFToEigen(trans, trans_);
+    transform = trans_.matrix();
+    return true;
+}
+
+bool rviz_visualization::getLighthouseTransform(const char *from, bool lighthouse, Matrix4d &transform){
+    tf::StampedTransform trans;
+    try {
+        listener.lookupTransform((lighthouse?"lighthouse2":"lighthouse1"), from, ros::Time(0), trans);
+    }
+    catch (tf::TransformException ex) {
+        ROS_WARN_THROTTLE(1,"%s", ex.what());
+        return false;
+    }
+
+    Eigen::Affine3d trans_;
+    tf::transformTFToEigen(trans, trans_);
+    transform = trans_.matrix();
+    return true;
+}
+
+bool rviz_visualization::getTransform(const char *from, const char *to, tf::Transform &transform){
+    tf::StampedTransform trans;
+    try {
+        listener.lookupTransform(to, from, ros::Time(0), trans);
+    }
+    catch (tf::TransformException ex) {
+        ROS_WARN_THROTTLE(1,"%s", ex.what());
+        return false;
+    }
+    transform = tf::Transform(trans);
+    return true;
+}
+
 bool rviz_visualization::getTransform(string from, string to, Matrix4d &transform){
     tf::StampedTransform trans;
     try {
