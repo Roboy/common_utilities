@@ -28,20 +28,28 @@ else
       if [[ $response =~ ^(yes|y)$ ]]; then
         collada=true
       fi
-        blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" 0.2 "$collada"
-        # python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
-        if [ $? -ne 0 ]; then
-          echo failed to reduce meshes...got blender>=2.8?
-          cd $currentworkingdirectory
-          exit 1
+        read -r -p "ratio?" response
+        if [[ $response =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
+            blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" 0.2 "$collada"
+            # python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
+            if [ $? -ne 0 ]; then
+              echo failed to reduce meshes...got blender>=2.8?
+              cd $currentworkingdirectory
+              exit 1
+            fi
+        else
+            echo "invalid input"
+            cd $currentworkingdirectory
+            exit 1
         fi
+    fi
 
-        read -r -p "use reduced meshes in model.sdf and model.urdf? [y/n] " response
-        response=${response,,}    # tolower
-        if [[ $response =~ ^(yes|y)$ ]]; then
-          python update_mesh_uri.py "$1/model.sdf" "$collada"
-          python update_mesh_uri.py "$1/model.urdf" "$collada"
-        fi
+    read -r -p "use reduced meshes in model.sdf and model.urdf? [y/n] " response
+    response=${response,,}    # tolower
+    if [[ $response =~ ^(yes|y)$ ]]; then
+      cd $currentworkingdirectory/../python
+      python update_mesh_uri.py "$1/model.sdf" "$collada"
+      python update_mesh_uri.py "$1/model.urdf" "$collada"
     fi
 
     ls ~/.gazebo/models/$projectname
