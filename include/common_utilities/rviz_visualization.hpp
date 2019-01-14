@@ -136,6 +136,22 @@ public:
                      float radius = 0.01, double duration = 0);
 
     /**
+     * Publishes a cube visualization marker
+     * @param pos position
+     * @param quat quaternion
+     * @param frame in this frame
+     * @param ns namespace
+     * @param message_id a unique id
+     * @param rgda rgb color (0-1) plus transparancy
+     * @param dx cube x dim
+     * @param dy cube y dim
+     * @param dz cube z dim
+     * @param duration for this duration in seconds (0=forever)
+     */
+    void publishCube(Vector3d &pos, Quaternionf &quat, const char *frame, const char *ns, int message_id, COLOR color,
+                     float dx = 0.01, float dy = 0.01, float dz = 0.01, double duration = 0);
+
+    /**
      * Publishes a cylinder visualization marker
      * @param pos at this positon
      * @param frame in this frame
