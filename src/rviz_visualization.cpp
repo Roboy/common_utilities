@@ -435,6 +435,41 @@ void rviz_visualization::publishCube(geometry_msgs::Pose &pose, const char* fram
     }
 }
 
+void rviz_visualization::publishCube(Vector3d &pos, Quaternionf &quat, const char *frame, const char *ns, int message_id,
+                                     COLOR color, float dx, float dy, float dz, double duration){
+    visualization_msgs::Marker cube;
+    cube.header.frame_id = frame;
+    cube.ns = ns;
+    cube.type = visualization_msgs::Marker::CUBE;
+    cube.color.r = color.r;
+    cube.color.g = color.g;
+    cube.color.b = color.b;
+    cube.color.a = color.a;
+    cube.lifetime = ros::Duration(duration);
+    cube.scale.x = dx;
+    cube.scale.y = dy;
+    cube.scale.z = dz;
+    cube.action = visualization_msgs::Marker::ADD;
+    cube.header.stamp = ros::Time::now();
+    cube.id = message_id;
+    cube.pose.position.x = pos(0);
+    cube.pose.position.y = pos(1);
+    cube.pose.position.z = pos(2);
+    cube.pose.orientation.x = quat.x();
+    cube.pose.orientation.y = quat.y();
+    cube.pose.orientation.z = quat.z();
+    cube.pose.orientation.w = quat.w();
+    if(publish_as_marker_array) {
+        marker_array.markers.push_back(cube);
+        if(marker_array.markers.size()>number_of_markers_to_publish_at_once){
+            visualization_array_pub.publish(marker_array);
+            marker_array.markers.clear();
+        }
+    }else {
+        visualization_pub.publish(cube);
+    }
+}
+
 void rviz_visualization::publishCylinder(Vector3d &pos, const char* frame, const char* ns, int message_id,
                                          COLOR color, float radius, double duration){
     visualization_msgs::Marker cylinder;
