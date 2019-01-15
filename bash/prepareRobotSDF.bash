@@ -30,7 +30,7 @@ else
       fi
         read -r -p "ratio?" response
         if [[ $response =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
-            blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" 0.2 "$collada"
+            blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" $response "$collada"
             # python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
             if [ $? -ne 0 ]; then
               echo failed to reduce meshes...got blender>=2.8?
