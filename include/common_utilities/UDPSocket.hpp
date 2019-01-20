@@ -25,6 +25,7 @@
 #include <bitset>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 #define MAXBUFLENGTH 1024
 
