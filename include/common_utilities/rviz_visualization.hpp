@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <Eigen/Core>
@@ -13,11 +14,17 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <geometry_msgs/Pose.h>
 #include <string>
+#include <sys/stat.h>
 
 using namespace Eigen;
 
 struct COLOR {
     COLOR(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {};
+    void randColor(){
+        r = 1.0f-(rand() / ((float)(RAND_MAX)));
+        g = 1.0f-(rand() / ((float)(RAND_MAX)));
+        b = 1.0f-(rand() / ((float)(RAND_MAX)));
+    };
     float r, g, b, a;
 };
 

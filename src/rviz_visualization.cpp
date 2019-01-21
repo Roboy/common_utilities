@@ -87,25 +87,47 @@ void rviz_visualization::processFeedback( const visualization_msgs::InteractiveM
 
 Marker rviz_visualization::makeBox( InteractiveMarker &msg )
 {
-    Marker marker;
 
-    marker.type = Marker::CUBE;
-    marker.scale.x = msg.scale * 0.45;
-    marker.scale.y = msg.scale * 0.45;
-    marker.scale.z = msg.scale * 0.45;
-    marker.color.r = 0.5;
-    marker.color.g = 0.5;
-    marker.color.b = 0.5;
-    marker.color.a = 1.0;
-    marker.pose.position.x = 0;
-    marker.pose.position.y = 0;
-    marker.pose.position.z = 0;
-    marker.pose.orientation.x = 0;
-    marker.pose.orientation.y = 0;
-    marker.pose.orientation.z = 0;
-    marker.pose.orientation.w = 1;
-
-    return marker;
+    std::string path = ros::package::getPath("robots");
+    struct stat buffer;
+    if(stat((path+"/common/meshes/visuals/roboy_head.stl").c_str(), &buffer) != 0) {
+        Marker marker;
+        marker.type = Marker::CUBE;
+        marker.scale.x = msg.scale * 0.45;
+        marker.scale.y = msg.scale * 0.45;
+        marker.scale.z = msg.scale * 0.45;
+        marker.color.r = 1;
+        marker.color.g = 0;
+        marker.color.b = 0;
+        marker.color.a = 0.8;
+        marker.pose.position.x = 0;
+        marker.pose.position.y = 0;
+        marker.pose.position.z = 0;
+        marker.pose.orientation.x = 0;
+        marker.pose.orientation.y = 0;
+        marker.pose.orientation.z = 0;
+        marker.pose.orientation.w = 1;
+        return marker;
+    }else {
+        Marker mesh;
+        mesh.type = visualization_msgs::Marker::MESH_RESOURCE;
+        mesh.scale.x = 0.0003;
+        mesh.scale.y = 0.0003;
+        mesh.scale.z = 0.0003;
+        mesh.color.r = 1.0;
+        mesh.color.g = 0;
+        mesh.color.b = 0;
+        mesh.color.a = 1.0;
+        mesh.pose.position.x = 0;
+        mesh.pose.position.y = 0;
+        mesh.pose.position.z = 0;
+        mesh.pose.orientation.x = 0;
+        mesh.pose.orientation.y = 0;
+        mesh.pose.orientation.z = 0;
+        mesh.pose.orientation.w = 1;
+        mesh.mesh_resource = "package://robots/common/meshes/visuals/roboy_head.stl";
+        return mesh;
+    }
 }
 
 InteractiveMarkerControl& rviz_visualization::makeBoxControl( InteractiveMarker &msg )
