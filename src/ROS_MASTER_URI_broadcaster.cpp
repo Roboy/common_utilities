@@ -21,6 +21,7 @@ int main(int argc, char *argv[]){
     FILE *fp = popen("hostname", "r");
     fgets(hostname, sizeof(hostname)-1, fp);
 
+    printf("Hostname: %s\n", hostname );
     // create the IP broadcast Socket
     UDPSocketPtr broadcast_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, true));
 

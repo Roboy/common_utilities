@@ -3,6 +3,7 @@
 // std
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
@@ -13,10 +14,7 @@
 #include <string>
 #include <ifaddrs.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <errno.h>
-#include <string.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -25,7 +23,12 @@
 #include <bitset>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include <boost/regex.hpp>
 #include <vector>
+#include <sstream>
+#include <fstream>
+
+
 
 #define MAXBUFLENGTH 1024
 

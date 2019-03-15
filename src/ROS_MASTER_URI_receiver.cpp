@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <common_utilities/UDPSocket.hpp>
+#include <boost/regex_fwd.hpp>
 
 const char* key = "The path of the righteous man is beset on all sides by the inequities of the "
         "selfish and the tyranny of evil men. Blessed is he who, in the name of "
@@ -18,21 +19,52 @@ int main(int argc, char *argv[]){
     // create the IP broadcast Socket
     UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, false));
     uint32_t status = 0;
-    while(status!=3 && !ros::master::check()){
-        usleep(1000000);
+
+    ostringstream bashrc;
+    ifstream in_file("/home/missxa/.bashrc");
+
+    bashrc << in_file.rdbuf();
+    string str = bashrc.str();
+
+    const char* pattern = "\nexport ROS_MASTER_URI=http://\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:11311";//.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\"\n"
+
+    boost::regex re(pattern);
+
+
+    while(status!=3) {// && !ros::master::check()) {
+        usleep(1000);
         printf("listening for HOST IP\n");
         uint32_t host_IP;
-        status = receiver_socket->receiveHostIP(key,host_IP);
-        if(status==3){
+        status = receiver_socket->receiveHostIP(key, host_IP);
+        if (status == 3) {
             char IP[16];
-            receiver_socket->convertByte2Text(host_IP,IP);
-            ROS_INFO("Received HOST IP: %s",IP);
+            receiver_socket->convertByte2Text(host_IP, IP);
+            ROS_INFO("Received HOST IP: %s", IP);
             char ros_master_uri[100];
-            sprintf(ros_master_uri, "ROS_MASTER_URI=http://%s:11311",IP);
-            printf("%s\n",ros_master_uri);
-            putenv(ros_master_uri);
+            sprintf(ros_master_uri, "\nexport ROS_MASTER_URI=http://%s:11311", IP);
+            printf("%s\n", ros_master_uri);
+            setenv("ROS_MASTER_URI", ros_master_uri, 1);
+
+            auto newstr = boost::regex_replace(str, re, ros_master_uri);
+            in_file.close();
+            ofstream out_file("/home/missxa/.bashrc");
+            out_file << newstr;
+
+//            char hostname[20];
+//            /* Open the command for reading. */
+//            FILE *fp = popen("hostname", "r");
+//            fgets(hostname, sizeof(hostname)-1, fp);
+//
+//            string name = string(hostname);
+//            name.erase(std::remove(name.begin(), name.end(), '\n'), name.end());
+//
+//            printf("Hostname: %s\n", hostname );
+//            auto nh = ros::NodeHandlePtr(new ros::NodeHandle(name + "_config"));
+//            int test;
+//            nh->getParam("test", test);
+//            ROS_INFO_STREAM(test);
+
         }
     }
-
     system (argv[1]);
 }
