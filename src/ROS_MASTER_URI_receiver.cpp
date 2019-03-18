@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
                     newstr = str + ros_master_uri;
                 }
             }
-            
+
             in_file.close();
             ofstream out_file("/home/"+user+"/.bashrc");
             out_file << newstr;

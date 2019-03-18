@@ -270,6 +270,8 @@ UDPSocket::UDPSocket(int port, bool broadcaster) {
     string myIP, myBroadcastIP;
     whatsMyIP(myIP, myBroadcastIP);
 
+    printf("ip: %s, broadcast: %s", myIP.c_str(), myBroadcastIP.c_str());
+
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_port = htons(port);
     broadcast_addr.sin_addr.s_addr = inet_addr(myBroadcastIP.c_str());
@@ -473,7 +475,10 @@ bool UDPSocket::whatsMyIP(string &ip, string &broadcast_ip, bool preferEthernet)
             inet_ntop(AF_INET, tmpAddrPtr2, Broadcast_IP, INET_ADDRSTRLEN);
             string str(ifa->ifa_name);
             if (str.find("eth") != std::string::npos ||
-                str.find("enp") != std::string::npos) { // if wifi or ethernet adapter
+                str.find("enp") != std::string::npos ||
+                str.find("eno") != std::string::npos ||
+                str.find("enx") != std::string::npos)
+            { // if wifi or ethernet adapter
                 printf("%s IP Address %s Broadcast IP %s\n", ifa->ifa_name, IP, Broadcast_IP);
                 eth_ip_str = string(IP);
                 eth_broadcast_ip_str = string(Broadcast_IP);
