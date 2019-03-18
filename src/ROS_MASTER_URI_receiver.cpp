@@ -20,8 +20,18 @@ int main(int argc, char *argv[]){
     UDPSocketPtr receiver_socket = UDPSocketPtr(new UDPSocket(BROADCAST_PORT, false));
     uint32_t status = 0;
 
+
+    FILE *name;
+    name = popen("whoami", "r");
+    char username[20];
+    fgets(username, sizeof(name)-1, name);
+
+    string user = string(username);
+    user.erase(std::remove(user.begin(), user.end(), '\n'), user.end());
+
     ostringstream bashrc;
-    ifstream in_file("/home/missxa/.bashrc");
+    ifstream in_file("/home/"+user+"/.bashrc");
+
 
     bashrc << in_file.rdbuf();
     string str = bashrc.str();
@@ -33,7 +43,7 @@ int main(int argc, char *argv[]){
 
     while(status!=3) {// && !ros::master::check()) {
         usleep(1000);
-        printf("listening for HOST IP\n");
+//        printf("listening for HOST IP\n");
         uint32_t host_IP;
         status = receiver_socket->receiveHostIP(key, host_IP);
         if (status == 3) {
@@ -47,7 +57,7 @@ int main(int argc, char *argv[]){
 
             auto newstr = boost::regex_replace(str, re, ros_master_uri);
             in_file.close();
-            ofstream out_file("/home/missxa/.bashrc");
+            ofstream out_file("/home/"+user+"/.bashrc");
             out_file << newstr;
 
 //            char hostname[20];
