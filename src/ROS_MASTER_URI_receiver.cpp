@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 
 
     while(status!=3) {// && !ros::master::check()) {
-        usleep(1000);
+        usleep(10000);
 //        printf("listening for HOST IP\n");
         uint32_t host_IP;
         status = receiver_socket->receiveHostIP(key, host_IP);

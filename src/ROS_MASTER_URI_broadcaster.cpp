@@ -37,10 +37,10 @@ int main(int argc, char *argv[]){
             j = 0;
     }
 //    printf("%s\n%s\n", key, output);
-
+    ROS_INFO("broadcasting HOST IP");
     while(ros::ok()){
-        ROS_INFO("broadcasting HOST IP");
+        printf(".");
         broadcast_socket->broadcastHostIP(output,strlen(key));
-        usleep(5000000);
+        usleep(50000);
     }
 }
