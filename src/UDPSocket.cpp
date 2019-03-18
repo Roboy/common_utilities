@@ -112,7 +112,7 @@ UDPSocket::UDPSocket(const char *server_IP, int server_port, const char *client_
 
 UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exclusive(exclusive) {
     string myIP, myBroadcastIP;
-    if (whatsMyIP(myIP,myBroadcastIP)) {
+    if (whatsMyIP(myIP,myBroadcastIP, PREFER_ETHERNET)) {
         cout <<"creating socket on " << myIP << ":" << BROADCAST_PORT << " with client " << client_IP << ":" << client_port << endl;
         int rv;
         struct addrinfo hints, *p;
@@ -168,7 +168,7 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, bool exclusive):exc
 
 UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bool exclusive):exclusive(exclusive) {
     string myIP, myBroadcastIP;
-    if (whatsMyIP(myIP, myBroadcastIP)) {
+    if (whatsMyIP(myIP, myBroadcastIP, PREFER_ETHERNET)) {
         cout << "creating socket on " << myIP << ":" << server_port << " with client " << client_IP << ":" << client_port << endl;
         int rv;
         struct addrinfo hints, *p;
@@ -224,7 +224,7 @@ UDPSocket::UDPSocket(const char *client_IP, int client_port, int server_port, bo
 
 UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
     string myIP, myBroadcastIP;
-    whatsMyIP(myIP, myBroadcastIP); // myBroadcastIP will not be used here
+    whatsMyIP(myIP, myBroadcastIP, PREFER_ETHERNET); // myBroadcastIP will not be used here
 
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_port = htons(port);
@@ -268,7 +268,7 @@ UDPSocket::UDPSocket(int port, int broadcastIP, bool broadcaster) {
 
 UDPSocket::UDPSocket(int port, bool broadcaster) {
     string myIP, myBroadcastIP;
-    whatsMyIP(myIP, myBroadcastIP);
+    whatsMyIP(myIP, myBroadcastIP, PREFER_ETHERNET);
 
     printf("ip: %s, broadcast: %s", myIP.c_str(), myBroadcastIP.c_str());
 

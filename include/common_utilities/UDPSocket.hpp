@@ -45,6 +45,8 @@
 
 #define BROADCAST_PORT 8000
 
+#define PREFER_ETHERNET 1
+
 using namespace std;
 
 #define pack754_32(f) (pack754((f), 32, 8))
