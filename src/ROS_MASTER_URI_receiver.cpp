@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <common_utilities/UDPSocket.hpp>
 #include <boost/regex_fwd.hpp>
+#include <boost/regex.hpp>
 
 const char* key = "The path of the righteous man is beset on all sides by the inequities of the "
         "selfish and the tyranny of evil men. Blessed is he who, in the name of "
@@ -36,9 +37,10 @@ int main(int argc, char *argv[]){
     bashrc << in_file.rdbuf();
     string str = bashrc.str();
 
-    const char* pattern = "\nexport ROS_MASTER_URI=http://\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:11311";//.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\"\n"
-
-    boost::regex re(pattern);
+    const char* pattern_ip = "\nexport ROS_MASTER_URI=http://\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:11311";//.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\"\n"
+    const char* pattern_env = "\nexport ROS_MASTER_URI=http://\\$ROS_IP:11311";
+    boost::regex re_ip(pattern_ip);
+    boost::regex re_env(pattern_env);
 
 
     while(status!=3) {// && !ros::master::check()) {
@@ -55,7 +57,21 @@ int main(int argc, char *argv[]){
             printf("%s\n", ros_master_uri);
             setenv("ROS_MASTER_URI", ros_master_uri, 1);
 
-            auto newstr = boost::regex_replace(str, re, ros_master_uri);
+            boost::cmatch what;
+            string newstr;
+
+            if (boost::regex_search(str.c_str(), what, re_ip)) {
+                newstr = boost::regex_replace(str, re_ip, ros_master_uri);
+            }
+            else {
+
+                if (boost::regex_search(str.c_str(), what, re_env)) {
+                    newstr = boost::regex_replace(str, re_env, ros_master_uri);
+                } else {
+                    newstr = str + ros_master_uri;
+                }
+            }
+            
             in_file.close();
             ofstream out_file("/home/"+user+"/.bashrc");
             out_file << newstr;
