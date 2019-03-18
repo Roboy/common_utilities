@@ -43,7 +43,7 @@
   (byte & 0x02 ? '1' : '0'), \
   (byte & 0x01 ? '1' : '0')
 
-#define BROADCAST_PORT 8000
+#define BROADCAST_PORT 8008
 
 #define PREFER_ETHERNET 1
 

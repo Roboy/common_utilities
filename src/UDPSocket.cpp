@@ -481,7 +481,7 @@ bool UDPSocket::whatsMyIP(string &ip, string &broadcast_ip, bool preferEthernet)
             { // if wifi or ethernet adapter
                 printf("%s IP Address %s Broadcast IP %s\n", ifa->ifa_name, IP, Broadcast_IP);
                 eth_ip_str = string(IP);
-                eth_broadcast_ip_str = string(Broadcast_IP);
+                eth_broadcast_ip_str = string("");
                 eth_ip = true;
             }
             if (str.find("wlp") != std::string::npos ||
