@@ -600,6 +600,14 @@ void rviz_visualization::publishText(Vector3d &pos, const char *text, const char
     }
 };
 
+void rviz_visualization::clearMarker(int id) {
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "world";
+    marker.id = id;
+    marker.action = visualization_msgs::Marker::DELETE;
+    visualization_pub.publish(marker);
+}
+
 void rviz_visualization::clearAll() {
     visualization_msgs::Marker marker;
     marker.header.frame_id = "world";

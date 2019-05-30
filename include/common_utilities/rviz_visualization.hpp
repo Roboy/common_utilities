@@ -199,6 +199,11 @@ public:
                      double duration, float height);
 
     /**
+     * Clears a marker with this id
+     */
+    void clearMarker(int id);
+
+    /**
      * Clears all markers in rviz
      */
     void clearAll();
