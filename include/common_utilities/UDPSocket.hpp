@@ -26,6 +26,7 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <ros/ros.h>
 
 #define MAXBUFLENGTH 1024
 
@@ -171,11 +172,6 @@ private:
 
     bool initialized = false;
     /**
-     * send to client
-     * @return success
-     */
-    bool sendUDPToClient();
-    /**
      * broadcast
      * @return success
      */
@@ -184,11 +180,17 @@ private:
     int sockfd; //* socket
     struct sockaddr_in server_addr; /* server's addr */
     struct sockaddr_in broadcast_addr; /* server's addr */
-    struct sockaddr_in client_addr; /* client addr */
     socklen_t client_addr_len, server_addr_len, broadcast_addr_len; /* byte size of addresses */
-    ssize_t numbytes; /* message byte size */
     struct addrinfo *servinfo;
     bool exclusive;
+public:
+    /**
+     * send to client
+     * @return success
+     */
+    bool sendUDPToClient();
+    struct sockaddr_in client_addr; /* client addr */
+    ssize_t numbytes; /* message byte size */
 };
 
 typedef boost::shared_ptr<UDPSocket> UDPSocketPtr;
