@@ -8,7 +8,7 @@ argv = sys.argv
 
 print(argv)
 
-if len(argv) <= 4 and len(argv) < 6:
+if len(argv) <= 4 or len(argv) > 6:
     print('USAGE: path/to/meshes/directory/ outputpath/directory/ ration[0-1] OPTIONAL: scale[0.01-1000]')
 else:
     files = [f for f in listdir(argv[1])]
@@ -23,7 +23,7 @@ else:
             print('Converting ( ' + str(i) + '/' + str(len(files)) + ' )')
             call(
                 ["blender", "--background", "--python", "reduceMesh.py", "--", join(argv[1], file), join(argv[2], file),
-                 argv[3], scale])
+                 argv[3], str(scale)])
         else:
             print('ignoring ' + join(argv[1], file))
     if (i < len(files)):
