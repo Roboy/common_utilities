@@ -6,9 +6,9 @@ from os.path import isfile, join
 
 argv = sys.argv
 
-print(argv)
+print(len(argv), argv)
 
-if len(argv) <= 4 or len(argv) > 6:
+if len(argv) < 4 or len(argv) > 6:
     print('USAGE: path/to/meshes/directory/ outputpath/directory/ ration[0-1] OPTIONAL: scale[0.01-1000]')
 else:
     files = [f for f in listdir(argv[1])]
