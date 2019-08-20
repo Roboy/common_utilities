@@ -28,14 +28,32 @@ else
       if [[ $response =~ ^(yes|y)$ ]]; then
         collada=true
       fi
-        read -r -p "ratio?" response
-        if [[ $response =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
-            blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" $response "$collada"
-            # python reduceMeshesInDirectory.py "$1/meshes/CAD/" "$1/meshes/CAD/" 0.2 1
-            if [ $? -ne 0 ]; then
-              echo failed to reduce meshes...got blender>=2.8?
-              cd $currentworkingdirectory
-              exit 1
+        read -r -p "ratio?" ratio
+        if [[ $ratio =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
+            read -r -p "use bounding boxes for collision models? [y/n] " response
+            response=${response,,}
+            if [[ $response =~ ^(yes|y)$ ]]; then
+                blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" $ratio "$collada"
+                if [ $? -ne 0 ]; then
+                  echo failed to reduce meshes...got blender>=2.8?
+                  cd $currentworkingdirectory
+                  exit 1
+                fi
+            else
+                read -r -p "ratio for collision models?" collision_ratio
+                if [[ $collision_ratio =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
+                    blender --background --python reduce-stl-dae-bpy.py -- "$1/meshes/" "$1/meshes/" $ratio "$collada" $collision_ratio
+                    if [ $? -ne 0 ]; then
+                      echo failed to reduce meshes...got blender>=2.8?
+                      cd $currentworkingdirectory
+                      exit 1
+                    fi
+                else
+                    echo "invalid input"
+                    cd $currentworkingdirectory
+                    exit 1
+                fi
+
             fi
         else
             echo "invalid input"
