@@ -10,8 +10,8 @@ const int ss_n[2] = {0,2};
 #define DIRECT_PWM 3
 #define maxPWM 500
 
-float Kp[2] = {1,1}, Kd[2] = {0,0}, err[2] = {0,0}, err_prev[2] = {0,0}, setpoint[2] = {300,0}, result[2] = {0,0};
-int control_mode[2] = {3,3};
+float Kp[2] = {0.1,0.1}, Kd[2] = {0.01,0.01}, err[2] = {0,0}, err_prev[2] = {0,0}, setpoint[2] = {300,0}, result[2] = {0,0};
+int control_mode[2] = {0,3};
 
 int32_t position[2] = {0,0};
 int16_t velocity[2] = {0,0}, current[2] = {0,0}, pwmRef[2] = {0,0};
