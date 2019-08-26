@@ -1,102 +1,99 @@
 #include <SPI.h>
 #include "ardprintf.h"
 
-struct SPISTREAM {
-  union {
-    struct {
-      uint16_t startOfFrame;
-      int16_t pwmRef;
-      uint16_t controlFlags1 : 16;
-      uint16_t controlFlags2 : 16;
-      uint16_t dummy : 16;
-      int32_t actualPosition : 32;
-      int16_t actualVelocity : 16;
-      int16_t actualCurrent : 16;
-      int16_t springDisplacement : 16;
-      int16_t sensor1 : 16;
-      int16_t sensor2 : 16;
-    };
-    uint8_t TxBuffer[24];
-    uint16_t TxBuffer2[12];
-  };
-};
+static const int spiClk = 2000000; // 2 MHz
 
-SPISTREAM tx_frame[2], rx_frame[2];
-#define SS_0 6
-#define SS_1 7
+const int ss_n[2] = {0,2};
 #define POSITION 0
 #define VELOCITY 1
 #define DISPLACEMENT 2
+#define DIRECT_PWM 3
 #define maxPWM 500
 
-float Kp[2] = {1,1}, Kd[2] = {0,0}, err[2] = {0,0}, err_prev[2] = {0,0}, setpoint[2] = {0,0}, result[2] = {0,0};
-int control_mode[2];
+float Kp[2] = {1,1}, Kd[2] = {0,0}, err[2] = {0,0}, err_prev[2] = {0,0}, setpoint[2] = {300,0}, result[2] = {0,0};
+int control_mode[2] = {3,3};
+
+int32_t position[2] = {0,0};
+int16_t velocity[2] = {0,0}, current[2] = {0,0}, pwmRef[2] = {0,0};
 
 void setup() {
-  for(int motor;motor<2;motor++){
-    tx_frame[motor].startOfFrame = 0x8000;
-    tx_frame[motor].pwmRef = 0;
-    tx_frame[motor].controlFlags1 = 0;
-    tx_frame[motor].controlFlags2 = 0;
-    tx_frame[motor].dummy = 0;
-    tx_frame[motor].actualPosition = 0;
-    tx_frame[motor].actualVelocity = 0;
-    tx_frame[motor].actualCurrent = 0;
-    tx_frame[motor].springDisplacement = 0;
-    tx_frame[motor].sensor1 = 0;
-    tx_frame[motor].sensor2 = 0;
-  }
   Serial.begin(115200);
+  Serial.println("welcome stranger");
   SPI.begin();
-  pinMode (SS_0, OUTPUT);
-  pinMode (SS_1, OUTPUT);
+  for(int motor=0;motor<2;motor++){
+    pinMode (ss_n[motor], OUTPUT);
+    digitalWrite(ss_n[motor],HIGH);
+  }
 }
 
 void loop() {
+  Serial.println("loopnoob");
   for(int motor=0;motor<2;motor++){
+    SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE1));
+    uint16_t data[2];
     for(int i=0;i<12;i++){
-      if(i<5){
-        SPI.transfer16(tx_frame[motor].TxBuffer2[i]);
-      }else{
-        rx_frame[motor].TxBuffer2[i] = SPI.transfer16(i);
+      digitalWrite(ss_n[motor],LOW);
+      delayMicroseconds(1);
+      if(i==0)
+        SPI.transfer16(0x8000); // header
+      else if(i==1)
+        SPI.transfer16((pwmRef[motor]& 0x7fff));
+      else{
+        switch(i){
+          case 4:
+            data[0] = SPI.transfer16(0);
+            break;  
+          case 5:
+            data[1] = SPI.transfer16(0);
+            position[motor] =  ((data[0]>>8)<<24|(data[0]&0xff)<<16|(data[1]>>8)<<8|(data[1]&0xff));
+            break; 
+          case 6:
+            velocity[motor] = SPI.transfer16(0);
+            break; 
+          case 7:
+            current[motor] = SPI.transfer16(0);
+            break; 
+          default:
+            SPI.transfer16(0);
+           break;
+         }
       }
+      digitalWrite(ss_n[motor],HIGH);
     }
+    SPI.endTransaction();
   }
   // controller
   for(int motor=0;motor<2;motor++){
     switch(control_mode[motor]){
       case POSITION:
-        err[motor] = setpoint[motor]-rx_frame[motor].actualPosition;
+        err[motor] = setpoint[motor]-position[motor];
         break;
       case VELOCITY:
-        err[motor] = setpoint[motor]-rx_frame[motor].actualVelocity;
+        err[motor] = setpoint[motor]-velocity[motor];
         break;
-      case DISPLACEMENT:
-        err[motor] = setpoint[motor]-rx_frame[motor].springDisplacement;
+      case DISPLACEMENT: // not implemented
+        err[motor] = 0;
+        break;
+      case DIRECT_PWM:
+        result[motor] = setpoint[motor];
         break;
     }
-    result[motor] = Kp[motor]*err[motor] + Kd[motor]*(err_prev[motor]-err[motor]);
-    err_prev[motor] = err[motor];
+    if(control_mode[motor]!=DIRECT_PWM){
+      result[motor] = Kp[motor]*err[motor] + Kd[motor]*(err_prev[motor]-err[motor]);
+      err_prev[motor] = err[motor];
+    }
     if(result[motor] > maxPWM){
       result[motor] = maxPWM;
     }
     if(result[motor] < -maxPWM){
       result[motor] = -maxPWM;
     }
-    tx_frame[motor].pwmRef = result[motor];
+    pwmRef[motor] = result[motor];
   }
-  ardprintf("pwmRef: %d %d\n"
-     "setpoints: %d %d\n"
-     "positions: %d %d\n"
-     "velocities: %d %d\n"
-     "currents: %d %d\n"
-     "displacements: %d %d\n", 
-     rx_frame[0].pwmRef, rx_frame[1].pwmRef,
-     setpoint[0], setpoint[1],
-     rx_frame[0].actualPosition, rx_frame[1].actualPosition,
-     rx_frame[0].actualVelocity, rx_frame[1].actualVelocity,
-     rx_frame[0].actualCurrent, rx_frame[1].actualCurrent,
-     rx_frame[0].springDisplacement, rx_frame[1].springDisplacement
-     );
-  
+  for(int motor=0;motor<2;motor++){
+    ardprintf("pwmRef: %d positions: %d velocities: %d currents: %d\n", 
+       pwmRef[motor], position[motor], velocity[motor], current[motor]
+    );
+  }
+  delay(10);
 }
