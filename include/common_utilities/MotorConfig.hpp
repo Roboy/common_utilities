@@ -7,13 +7,39 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <common_utilities/CommonDefinitions.h>
+#include "CommonDefinitions.h"
 
 using namespace std;
 
+class Motor{
+public:
+    Motor(int icebus, int icebus_id, int motor_id_global,
+          vector<float> &coeffs_force2displacement,
+          vector<float> &coeffs_displacement2force):
+          icebus(icebus), icebus_id(icebus_id), motor_id_global(motor_id_global),
+          coeffs_force2displacement(coeffs_force2displacement),
+          coeffs_displacement2force(coeffs_displacement2force){
+        stringstream str;
+        str << "force -> displacement" << "\t ";
+        for(int i=0;i<coeffs_force2displacement.size();i++){
+            str << coeffs_force2displacement[i] << "\t";
+        }
+        str << "\n displacement -> force" << "\t ";
+        for(int i=0;i<coeffs_displacement2force.size();i++){
+            str << coeffs_displacement2force[i] << "\t";
+        }
+        ROS_INFO("Motor with global id %d on icebus %d with icebus_id %d initialized with polynomial parameters:"
+                 "%s",motor_id_global, icebus, icebus_id, str.str().c_str());
+    };
+    int icebus, icebus_id, motor_id_global;
+    vector<float> coeffs_force2displacement;
+    vector<float> coeffs_displacement2force;
+};
+
+typedef boost::shared_ptr<Motor> MotorPtr;
+
 class MotorConfig{
 public:
-    MotorConfig();
     /**
      * Reads a yaml motor config file
      * @param filepath to config
@@ -39,7 +65,7 @@ public:
      * @param motor motor id (as listed in read config)
      * @return force
      */
-    double displacement2force(double displacement, int fpga, int motor);
+    double displacement2force(double displacement, int motor_id_global);
     /**
      * Transforms force to displacement using loaded coefficients
      * @param displacement
@@ -47,7 +73,9 @@ public:
      * @param motor motor id (as listed in read config)
      * @return force
      */
-    double force2displacement(double force, int fpga, int motor);
-
-    vector<vector<vector<float>>> coeffs_displacement2force, coeffs_force2displacement;
+    double force2displacement(double force, int motor_id_global);
+    int number_of_icebuses = 0, total_number_of_motors = 0;
+    map<int, MotorPtr> motor;
 };
+
+typedef boost::shared_ptr<MotorConfig> MotorConfigPtr;
