@@ -13,10 +13,10 @@ using namespace std;
 
 class Motor{
 public:
-    Motor(int icebus, int icebus_id, int motor_id_global,
+    Motor(int icebus, int icebus_id, int motor_id_global, string muscleType,
           vector<float> &coeffs_force2displacement,
           vector<float> &coeffs_displacement2force):
-          icebus(icebus), icebus_id(icebus_id), motor_id_global(motor_id_global),
+          icebus(icebus), icebus_id(icebus_id), motor_id_global(motor_id_global),muscleType(muscleType),
           coeffs_force2displacement(coeffs_force2displacement),
           coeffs_displacement2force(coeffs_displacement2force){
         stringstream str;
@@ -34,9 +34,19 @@ public:
     int icebus, icebus_id, motor_id_global;
     vector<float> coeffs_force2displacement;
     vector<float> coeffs_displacement2force;
+    string muscleType;
 };
 
 typedef boost::shared_ptr<Motor> MotorPtr;
+
+class BodyPart{
+public:
+
+    vector<MotorPtr> motor_ids_global;
+    string name;
+};
+
+typedef boost::shared_ptr<BodyPart> BodyPartPtr;
 
 class MotorConfig{
 public:
@@ -76,6 +86,8 @@ public:
     double force2displacement(double force, int motor_id_global);
     int number_of_icebuses = 0, total_number_of_motors = 0;
     map<int, MotorPtr> motor;
+    map<int, vector<MotorPtr>> icebus;
+    map<int, BodyPartPtr> body_part;
 };
 
 typedef boost::shared_ptr<MotorConfig> MotorConfigPtr;
