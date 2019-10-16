@@ -87,10 +87,11 @@ public:
      * @param message_id unique id
      * @param duration in seconds
      * @param color of the mesh
+     * @param modify if set, the mesh pose will be updated
      */
     void publishMesh(const char *package, const char *relative_path, const char *modelname, geometry_msgs::Pose &pose,
                      double scale, const char *frame, const char *ns, int message_id, double duration = 0,
-                     COLOR color = COLOR(1, 1, 1, 1));
+                     COLOR color = COLOR(1, 1, 1, 1), bool modify = false);
 
     /**
      * Publishes a sphere visualization marker

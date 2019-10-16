@@ -294,7 +294,7 @@ void rviz_visualization::publishMesh(const char * package, const char* relative_
 };
 
 void rviz_visualization::publishMesh(const char * package, const char* relative_path, const char *modelname, geometry_msgs::Pose &pose,
-                 double scale, const char *frame, const char *ns, int message_id, double duration, COLOR color){
+                 double scale, const char *frame, const char *ns, int message_id, double duration, COLOR color, bool modify){
     visualization_msgs::Marker mesh;
     mesh.header.frame_id = frame;
     mesh.ns = ns;
@@ -308,7 +308,10 @@ void rviz_visualization::publishMesh(const char * package, const char* relative_
     mesh.scale.z = scale;
     mesh.lifetime = ros::Duration(duration);
     mesh.header.stamp = ros::Time::now();
-    mesh.action = visualization_msgs::Marker::ADD;
+    if(!modify)
+        mesh.action = visualization_msgs::Marker::ADD;
+    else
+        mesh.action = visualization_msgs::Marker::MODIFY;
     mesh.id = message_id;
     mesh.pose = pose;
     char meshpath[200];
