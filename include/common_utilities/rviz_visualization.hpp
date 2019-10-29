@@ -73,7 +73,7 @@ public:
     void publishMesh(const char *package, const char *relative_path, const char *modelname, Vector3d &pos,
                      Quaterniond &orientation,
                      double scale, const char *frame, const char *ns, int message_id, double duration = 0,
-                     COLOR color = COLOR(1, 1, 1, 1));
+                     COLOR color = COLOR(1, 1, 1, 1), bool update = false);
 
     /**
      * Publishes a mesh visualization marker
@@ -90,7 +90,7 @@ public:
      */
     void publishMesh(const char *package, const char *relative_path, const char *modelname, geometry_msgs::Pose &pose,
                      double scale, const char *frame, const char *ns, int message_id, double duration = 0,
-                     COLOR color = COLOR(1, 1, 1, 1));
+                     COLOR color = COLOR(1, 1, 1, 1), bool update = false);
 
     /**
      * Publishes a sphere visualization marker
