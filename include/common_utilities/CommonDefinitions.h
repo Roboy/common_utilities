@@ -57,17 +57,16 @@
 #define POSITION 0
 #define VELOCITY 1
 #define DISPLACEMENT 2
-#define FORCE 3
-#define DIRECT_PWM 4
+#define DIRECT_PWM 3
 
 typedef struct {
-    int control_mode = 0;
-    float PWMLimit = 512; /*!< maximum control output in the positive direction in counts, max 512*/
+    int control_mode = 3;
+    float PWMLimit = 1000000; /*!< maximum control output in the positive direction in counts, max 1000000*/
     float Kp = 1;/*!<Gain of the proportional component*/
     float Ki = 0;/*!<Gain of the integral component*/
     float Kd = 0;/*!<Gain of the differential component*/
     float deadband = 0;/*!<Optional deadband threshold for the control response*/
-    float IntegralLimit = 50; /*!<Integral maximum*/
+    float IntegralLimit = 500000; /*!<Integral maximum*/
 } control_Parameters_t;
 
 typedef struct {
