@@ -54,10 +54,20 @@
 #define springEncoderTicksPerMeter(meter) (10*1000*meter)
 #define springMeterPerEncoderTicks(encoderTicks) (encoderTicks/(10*1000))
 
-#define POSITION 0
-#define VELOCITY 1
-#define DISPLACEMENT 2
-#define DIRECT_PWM 3
+enum ENCODERS{
+    ENCODER0,
+    ENCODER1
+};
+
+enum CONTROL_MODES{
+    ENCODER0_POSITION = 0,
+    ENCODER1_POSITION = 1,
+    ENCODER0_VELOCITY = 2,
+    ENCODER1_VELOCITY = 3,
+    DISPLACEMENT = 4,
+    FORCE = 5,
+    DIRECT_PWM = 6
+};
 
 typedef struct {
     int control_mode = 3;
@@ -68,6 +78,24 @@ typedef struct {
     float deadband = 0;/*!<Optional deadband threshold for the control response*/
     float IntegralLimit = 500000; /*!<Integral maximum*/
 } control_Parameters_t;
+
+[[deprecated("will be obsoulted by icebus")]]
+typedef struct {
+    float control_mode;
+    float outputPosMax = 4000; /*!< maximum control output in the positive direction in counts, max 4000*/
+    float outputNegMax = -4000; /*!< maximum control output in the negative direction in counts, max -4000*/
+    float spPosMax;/*<!Positive limit for the set point.*/
+    float spNegMax;/*<!Negative limit for the set point.*/
+    float Kp = 100;/*!<Gain of the proportional component*/
+    float Ki = 0;/*!<Gain of the integral component*/
+    float Kd = 0;/*!<Gain of the differential component*/
+    float forwardGain = 0; /*!<Gain of  the feed-forward term*/
+    float deadBand = 0;/*!<Optional deadband threshold for the control response*/
+    float IntegralPosMax; /*!<Integral positive component maximum*/
+    float IntegralNegMax; /*!<Integral negative component maximum*/
+    float radPerEncoderCount = {2 * 3.14159265359f / (2000.0f * 53.0f)};
+    float outputDivider = 100; /*! This divides the output of the PID controllers */
+} control_Parameters_legacy;
 
 typedef struct {
     uint16_t fw_version;

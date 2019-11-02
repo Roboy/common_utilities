@@ -8,7 +8,7 @@ bool MotorConfig::readConfig(const string &filepath){
     YAML::Node config = YAML::LoadFile(filepath);
     number_of_icebuses = config["number_of_icebuses"].as<int>();
     if(number_of_icebuses==0)
-        ROS_FATAL("no icebus defined, check your motor config file");
+        ROS_WARN("number_of_icebuses is zero! check your moto config file, if this is not on purpose");
     else
         ROS_INFO("configuring %d icebuses",number_of_icebuses);
     for(int i=0;i<number_of_icebuses;i++){
@@ -45,6 +45,47 @@ bool MotorConfig::readConfig(const string &filepath){
         }
         total_number_of_motors += number_of_motors;
     }
+
+    number_of_myobuses = config["number_of_myobuses"].as<int>();
+    if(number_of_myobuses==0)
+        ROS_WARN("number_of_myobuses is zero! check your moto config file, if this is not on purpose");
+    else
+        ROS_INFO("configuring %d myobuses",number_of_myobuses);
+    for(int i=0;i<number_of_myobuses;i++){
+        char str[20];
+        sprintf(str,"myobus_%d",i);
+        int number_of_motors = config[str]["number_of_motors"].as<int>();
+        vector<int> motor_ids = config[str]["motor_ids"].as<vector<int>>();
+        vector<int> motor_ids_global = config[str]["motor_ids_global"].as<vector<int>>();
+        vector<string> muscleType = config[str]["muscle_type"].as<vector<string>>();
+        vector<vector<float>> coeffs_force2displacement = config[str]["coeffs_force2displacement"].as<vector<vector<float>>>();
+        vector<vector<float>> coeffs_displacement2force = config[str]["coeffs_displacement2force"].as<vector<vector<float>>>();
+        if(motor_ids.size()!=number_of_motors){
+            ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file",i);
+            continue;
+        }
+        if(motor_ids_global.size()!=number_of_motors){
+            ROS_ERROR("motor_ids_global of icebus %d does not match number_of_motors, check your motor config file",i);
+            continue;
+        }
+        if(coeffs_force2displacement.size()!=number_of_motors){
+            ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file",i);
+            continue;
+        }
+        if(coeffs_displacement2force.size()!=number_of_motors){
+            ROS_ERROR("coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file",i);
+            continue;
+        }
+        for(int m=0;m<number_of_motors;m++){
+            MotorPtr motor_ = MotorPtr(new Motor(i,motor_ids[m],motor_ids_global[m],muscleType[m],
+                                                 coeffs_force2displacement[m],
+                                                 coeffs_displacement2force[m]));
+            motor[motor_ids_global[m]] = motor_;
+            myobus[i].push_back(motor_);
+        }
+        total_number_of_motors += number_of_motors;
+    }
+
     vector<string> body_parts = config["body_part"]["name"].as<vector<string>>();
     vector<vector<int>> body_part_motor_ids_global = config["body_part"]["motor_ids_global"].as<vector<vector<int>>>();
     for(int i=0;i<body_parts.size();i++){
