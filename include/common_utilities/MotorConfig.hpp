@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "CommonDefinitions.h"
-#include "interfaces/motorControl.hpp"
+
 
 using namespace std;
 
