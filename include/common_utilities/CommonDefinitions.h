@@ -82,11 +82,11 @@ typedef struct {
 [[deprecated("will be obsoulted by icebus")]]
 typedef struct {
     float control_mode;
-    float outputPosMax = 4000; /*!< maximum control output in the positive direction in counts, max 4000*/
-    float outputNegMax = -4000; /*!< maximum control output in the negative direction in counts, max -4000*/
+    float outputPosMax = 500; /*!< maximum control output in the positive direction in counts, max 4000*/
+    float outputNegMax = -500; /*!< maximum control output in the negative direction in counts, max -4000*/
     float spPosMax;/*<!Positive limit for the set point.*/
     float spNegMax;/*<!Negative limit for the set point.*/
-    float Kp = 100;/*!<Gain of the proportional component*/
+    float Kp = 1;/*!<Gain of the proportional component*/
     float Ki = 0;/*!<Gain of the integral component*/
     float Kd = 0;/*!<Gain of the differential component*/
     float forwardGain = 0; /*!<Gain of  the feed-forward term*/
@@ -94,7 +94,7 @@ typedef struct {
     float IntegralPosMax; /*!<Integral positive component maximum*/
     float IntegralNegMax; /*!<Integral negative component maximum*/
     float radPerEncoderCount = {2 * 3.14159265359f / (2000.0f * 53.0f)};
-    float outputDivider = 100; /*! This divides the output of the PID controllers */
+    float outputDivider = 5; /*! This divides the output of the PID controllers */
 } control_Parameters_legacy;
 
 typedef struct {
