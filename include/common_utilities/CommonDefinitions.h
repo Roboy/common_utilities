@@ -62,21 +62,18 @@ enum ENCODERS{
 enum CONTROL_MODES{
     ENCODER0_POSITION = 0,
     ENCODER1_POSITION = 1,
-    ENCODER0_VELOCITY = 2,
-    ENCODER1_VELOCITY = 3,
-    DISPLACEMENT = 4,
-    FORCE = 5,
-    DIRECT_PWM = 6
+    DISPLACEMENT = 2,
+    DIRECT_PWM = 3
 };
 
 typedef struct {
     int control_mode = 3;
-    float PWMLimit = 1000000; /*!< maximum control output in the positive direction in counts, max 1000000*/
+    float PWMLimit = 300; /*!< maximum control output in the positive direction in counts, max 1000000*/
     float Kp = 1;/*!<Gain of the proportional component*/
     float Ki = 0;/*!<Gain of the integral component*/
     float Kd = 0;/*!<Gain of the differential component*/
     float deadband = 0;/*!<Optional deadband threshold for the control response*/
-    float IntegralLimit = 500000; /*!<Integral maximum*/
+    float IntegralLimit = 50; /*!<Integral maximum*/
 } control_Parameters_t;
 
 [[deprecated("will be obsoulted by icebus")]]

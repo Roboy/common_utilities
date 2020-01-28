@@ -15,6 +15,7 @@ bool MotorConfig::readConfig(const string &filepath){
         char str[20];
         sprintf(str,"icebus_%d",i);
         int number_of_motors = config[str]["number_of_motors"].as<int>();
+        vector<int> bus_ids = config[str]["bus_ids"].as<vector<int>>();
         vector<int> motor_ids = config[str]["motor_ids"].as<vector<int>>();
         vector<int> motor_ids_global = config[str]["motor_ids_global"].as<vector<int>>();
         vector<string> muscleType = config[str]["muscle_type"].as<vector<string>>();
@@ -22,6 +23,10 @@ bool MotorConfig::readConfig(const string &filepath){
         vector<vector<float>> coeffs_displacement2force = config[str]["coeffs_displacement2force"].as<vector<vector<float>>>();
         if(motor_ids.size()!=number_of_motors){
             ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file",i);
+            continue;
+        }
+        if(bus_ids.size()!=number_of_motors){
+            ROS_ERROR("bus_ids of icebus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(motor_ids_global.size()!=number_of_motors){
@@ -37,7 +42,7 @@ bool MotorConfig::readConfig(const string &filepath){
             continue;
         }
         for(int m=0;m<number_of_motors;m++){
-            MotorPtr motor_ = MotorPtr(new Motor(i,motor_ids[m],motor_ids_global[m],muscleType[m],
+            MotorPtr motor_ = MotorPtr(new Motor(i,bus_ids[m],motor_ids[m],motor_ids_global[m],muscleType[m],
                     coeffs_force2displacement[m],
                                        coeffs_displacement2force[m]));
             motor[motor_ids_global[m]] = motor_;
@@ -77,7 +82,7 @@ bool MotorConfig::readConfig(const string &filepath){
             continue;
         }
         for(int m=0;m<number_of_motors;m++){
-            MotorPtr motor_ = MotorPtr(new Motor(i,motor_ids[m],motor_ids_global[m],muscleType[m],
+            MotorPtr motor_ = MotorPtr(new Motor(i,motor_ids[m],motor_ids[m],motor_ids_global[m],muscleType[m],
                                                  coeffs_force2displacement[m],
                                                  coeffs_displacement2force[m]));
             motor[motor_ids_global[m]] = motor_;
