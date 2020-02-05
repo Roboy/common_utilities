@@ -66,19 +66,19 @@ bool MotorConfig::readConfig(const string &filepath){
         vector<vector<float>> coeffs_force2displacement = config[str]["coeffs_force2displacement"].as<vector<vector<float>>>();
         vector<vector<float>> coeffs_displacement2force = config[str]["coeffs_displacement2force"].as<vector<vector<float>>>();
         if(motor_ids.size()!=number_of_motors){
-            ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file",i);
+            ROS_ERROR("motor_ids of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(motor_ids_global.size()!=number_of_motors){
-            ROS_ERROR("motor_ids_global of icebus %d does not match number_of_motors, check your motor config file",i);
+            ROS_ERROR("motor_ids_global of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(coeffs_force2displacement.size()!=number_of_motors){
-            ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file",i);
+            ROS_ERROR("coeffs_force2displacement of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(coeffs_displacement2force.size()!=number_of_motors){
-            ROS_ERROR("coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file",i);
+            ROS_ERROR("coeffs_displacement2force of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         for(int m=0;m<number_of_motors;m++){
