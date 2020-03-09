@@ -7,3 +7,4 @@ log/
 latest
 src/CMakeLists.txt
 cmake-build-debug/
+*.gch
