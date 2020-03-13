@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
+#include <memory>
 #include <map>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -29,7 +30,7 @@ public:
         for(int i=0;i<coeffs_displacement2force.size();i++){
             str << coeffs_displacement2force[i] << "\t";
         }
-        ROS_INFO("Motor with global id %d on bus %d with motor_id %d and bus_id %d initialized with polynomial parameters:"
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Motor with global id %d on bus %d with motor_id %d and bus_id %d initialized with polynomial parameters:"
                  "%s",motor_id_global, bus, motor_id, bus_id, str.str().c_str());
     };
     int bus, bus_id, motor_id, motor_id_global;
@@ -39,7 +40,7 @@ public:
     string muscleType;
 };
 
-typedef boost::shared_ptr<Motor> MotorPtr;
+typedef std::shared_ptr<Motor> MotorPtr;
 
 class BodyPart{
 public:

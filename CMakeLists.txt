@@ -1,30 +1,39 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project( common_utilities )
 
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g")
 
 SET(CMAKE_BUILD_TYPE Debug)
 
 #==============================================================================
 # Dependencies
 #==============================================================================
-find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers tf tf_conversions visualization_msgs roboy_middleware_msgs)
-catkin_package(CATKIN_DEPENDS message_runtime INCLUDE_DIRS include
-        LIBRARIES rviz_visualization UDPSocket MotorConfig)
+#find_package(catkin REQUIRED roscpp std_msgs tf interactive_markers tf tf_conversions visualization_msgs roboy_middleware_msgs)
+#catkin_package(CATKIN_DEPENDS message_runtime INCLUDE_DIRS include
+#        LIBRARIES rviz_visualization UDPSocket MotorConfig)
 
-# Eigen
-find_package(PkgConfig REQUIRED )
-pkg_check_modules(EIGEN3 REQUIRED eigen3)
-include_directories(${EIGEN3_INCLUDE_DIRS})
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs  REQUIRED)
+find_package(roboy_middleware_msgs REQUIRED)
+
+find_package(eigen3_cmake_module)
+find_package(Eigen3)
+include_directories(${Eigen3_INCLUDE_DIRS})
 
 # yaml-cpp
-pkg_check_modules( yaml-cpp REQUIRED yaml-cpp)
+find_package(yaml-cpp REQUIRED yaml-cpp)
 include_directories(${yaml-cpp_INCLUDE_DIRS})
 
-include_directories( include ${catkin_INCLUDE_DIRS} )
+include_directories( include )
+ament_export_include_directories(include)
+ament_export_dependencies(rosidl_default_runtime)
 
+add_library(common_utilities SHARED src/MotorConfig.cpp include/common_utilities/MotorConfig.hpp include/common_utilities/CommonDefinitions.h)
+#target_compile_definitions(motor_config)
+ament_target_dependencies(common_utilities rclcpp rclcpp_components std_msgs roboy_middleware_msgs})
 #==============================================================================
 # Application
 #==============================================================================
@@ -37,12 +46,12 @@ include_directories( include ${catkin_INCLUDE_DIRS} )
 #add_executable( ROS_MASTER_URI_receiver src/ROS_MASTER_URI_receiver.cpp)
 #target_link_libraries( ROS_MASTER_URI_receiver ${catkin_LIBRARIES} UDPSocket )
 
-add_library( rviz_visualization src/rviz_visualization.cpp )
-target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
+#add_library( rviz_visualization src/rviz_visualization.cpp )
+#target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
 
-add_library( MotorConfig src/MotorConfig.cpp )
-add_dependencies( MotorConfig roboy_middleware_msgs_gencpp)
-target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
+#add_library( MotorConfig src/MotorConfig.cpp )
+#add_dependencies( MotorConfig roboy_middleware_msgs_gencpp)
+#target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
 
 #add_executable( rfid_unlocker src/rfid_unlocker.cpp )
 #target_link_libraries( rfid_unlocker ${catkin_LIBRARIES} UDPSocket )
@@ -57,18 +66,21 @@ target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
 #        )
 
 install(TARGETS
-        UDPSocket
-        rviz_visualization
-        MotorConfig
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        common_utilities
+        LIBRARY DESTINATION lib/${PROJECT_NAME}
         )
 
-install(FILES
-        package.xml
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
 
-install(DIRECTORY include/common_utilities/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-        FILES_MATCHING PATTERN "*.hpp"
-        )
+
+#install(DIRECTORY include/common_utilities/
+#        DESTINATION include
+#        FILES_MATCHING PATTERN "*.hpp"
+#        )
+
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION include/${PROJECT_NAME}
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+        PATTERN ".git" EXCLUDE)
+
+ament_export_libraries(common_utilities)
+ament_package()
