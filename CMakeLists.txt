@@ -28,14 +28,14 @@ include_directories( include ${catkin_INCLUDE_DIRS} )
 #==============================================================================
 # Application
 #==============================================================================
-add_library(UDPSocket src/UDPSocket.cpp)
-target_link_libraries( UDPSocket ${catkin_LIBRARIES}  )
-
-add_executable( ROS_MASTER_URI_broadcaster src/ROS_MASTER_URI_broadcaster.cpp)
-target_link_libraries( ROS_MASTER_URI_broadcaster ${catkin_LIBRARIES} UDPSocket )
-
-add_executable( ROS_MASTER_URI_receiver src/ROS_MASTER_URI_receiver.cpp)
-target_link_libraries( ROS_MASTER_URI_receiver ${catkin_LIBRARIES} UDPSocket )
+#add_library(UDPSocket src/UDPSocket.cpp)
+#target_link_libraries( UDPSocket ${catkin_LIBRARIES}  )
+#
+#add_executable( ROS_MASTER_URI_broadcaster src/ROS_MASTER_URI_broadcaster.cpp)
+#target_link_libraries( ROS_MASTER_URI_broadcaster ${catkin_LIBRARIES} UDPSocket )
+#
+#add_executable( ROS_MASTER_URI_receiver src/ROS_MASTER_URI_receiver.cpp)
+#target_link_libraries( ROS_MASTER_URI_receiver ${catkin_LIBRARIES} UDPSocket )
 
 add_library( rviz_visualization src/rviz_visualization.cpp )
 target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
@@ -44,17 +44,17 @@ add_library( MotorConfig src/MotorConfig.cpp )
 add_dependencies( MotorConfig roboy_middleware_msgs_gencpp)
 target_link_libraries( MotorConfig ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES} )
 
-add_executable( rfid_unlocker src/rfid_unlocker.cpp )
-target_link_libraries( rfid_unlocker ${catkin_LIBRARIES} UDPSocket )
+#add_executable( rfid_unlocker src/rfid_unlocker.cpp )
+#target_link_libraries( rfid_unlocker ${catkin_LIBRARIES} UDPSocket )
 
 #==============================================================================
 # Installation
 #==============================================================================
-install(TARGETS
-        ROS_MASTER_URI_broadcaster
-        ROS_MASTER_URI_receiver
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+#install(TARGETS
+#        ROS_MASTER_URI_broadcaster
+#        ROS_MASTER_URI_receiver
+#        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#        )
 
 install(TARGETS
         UDPSocket

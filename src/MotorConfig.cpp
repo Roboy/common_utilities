@@ -2,15 +2,15 @@
 
 bool MotorConfig::readConfig(const string &filepath){
     if(!fileExists(filepath)) {
-        ROS_FATAL_STREAM(filepath << " does not exist, check your path");
+        RCLCPP_FATAL(rclcpp::get_logger("rclcpp"), "motor config file does not exist, check your path");
         return false;
     }
     YAML::Node config = YAML::LoadFile(filepath);
     number_of_icebuses = config["number_of_icebuses"].as<int>();
     if(number_of_icebuses==0)
-        ROS_WARN("number_of_icebuses is zero! check your moto config file, if this is not on purpose");
+        RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"number_of_icebuses is zero! check your moto config file, if this is not on purpose");
     else
-        ROS_INFO("configuring %d icebuses",number_of_icebuses);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"configuring %d icebuses",number_of_icebuses);
     for(int i=0;i<number_of_icebuses;i++){
         char str[20];
         sprintf(str,"icebus_%d",i);
@@ -22,23 +22,23 @@ bool MotorConfig::readConfig(const string &filepath){
         vector<vector<float>> coeffs_force2displacement = config[str]["coeffs_force2displacement"].as<vector<vector<float>>>();
         vector<vector<float>> coeffs_displacement2force = config[str]["coeffs_displacement2force"].as<vector<vector<float>>>();
         if(motor_ids.size()>number_of_motors){
-            ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"motor_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
             motor_ids.resize(number_of_motors);
         }
         if(bus_ids.size()>number_of_motors){
-            ROS_ERROR("bus_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"bus_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
             bus_ids.resize(number_of_motors);
         }
         if(motor_ids_global.size()>number_of_motors){
-            ROS_ERROR("motor_ids_global of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"motor_ids_global of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
             motor_ids_global.resize(number_of_motors);
         }
         if(coeffs_force2displacement.size()>number_of_motors){
-            ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
             coeffs_force2displacement.resize(number_of_motors);
         }
         if(coeffs_displacement2force.size()>number_of_motors){
-            ROS_ERROR("coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
             coeffs_displacement2force.resize(number_of_motors);
         }
         for(int m=0;m<number_of_motors;m++){
@@ -53,9 +53,9 @@ bool MotorConfig::readConfig(const string &filepath){
 
     number_of_myobuses = config["number_of_myobuses"].as<int>();
     if(number_of_myobuses==0)
-        ROS_WARN("number_of_myobuses is zero! check your moto config file, if this is not on purpose");
+        RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"number_of_myobuses is zero! check your moto config file, if this is not on purpose");
     else
-        ROS_INFO("configuring %d myobuses",number_of_myobuses);
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"configuring %d myobuses",number_of_myobuses);
     for(int i=0;i<number_of_myobuses;i++){
         char str[20];
         sprintf(str,"myobus_%d",i);
@@ -66,19 +66,19 @@ bool MotorConfig::readConfig(const string &filepath){
         vector<vector<float>> coeffs_force2displacement = config[str]["coeffs_force2displacement"].as<vector<vector<float>>>();
         vector<vector<float>> coeffs_displacement2force = config[str]["coeffs_displacement2force"].as<vector<vector<float>>>();
         if(motor_ids.size()!=number_of_motors){
-            ROS_ERROR("motor_ids of myobus %d does not match number_of_motors, check your motor config file",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"motor_ids of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(motor_ids_global.size()!=number_of_motors){
-            ROS_ERROR("motor_ids_global of myobus %d does not match number_of_motors, check your motor config file",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"motor_ids_global of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(coeffs_force2displacement.size()!=number_of_motors){
-            ROS_ERROR("coeffs_force2displacement of myobus %d does not match number_of_motors, check your motor config file",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"coeffs_force2displacement of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         if(coeffs_displacement2force.size()!=number_of_motors){
-            ROS_ERROR("coeffs_displacement2force of myobus %d does not match number_of_motors, check your motor config file",i);
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"coeffs_displacement2force of myobus %d does not match number_of_motors, check your motor config file",i);
             continue;
         }
         for(int m=0;m<number_of_motors;m++){
@@ -100,7 +100,7 @@ bool MotorConfig::readConfig(const string &filepath){
             if(motor.find(body_part_motor_ids_global[i][j]) != motor.end())
               body_part[i]->motor_ids_global.push_back(motor[body_part_motor_ids_global[i][j]]);
             else
-              ROS_ERROR("the motor %d assigned to body_part %s does not exist, check your motor config file", body_part_motor_ids_global[i][j], body_part[i]->name.c_str());
+              RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"the motor %d assigned to body_part %s does not exist, check your motor config file", body_part_motor_ids_global[i][j], body_part[i]->name.c_str());
         }
     }
     return true;
