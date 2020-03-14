@@ -31,9 +31,9 @@ include_directories( include )
 ament_export_include_directories(include)
 ament_export_dependencies(rosidl_default_runtime)
 
-add_library(common_utilities SHARED src/MotorConfig.cpp include/common_utilities/MotorConfig.hpp include/common_utilities/CommonDefinitions.h)
+add_library(motor_config SHARED src/MotorConfig.cpp) # include/common_utilities/MotorConfig.hpp include/common_utilities/CommonDefinitions.h)
 #target_compile_definitions(motor_config)
-ament_target_dependencies(common_utilities rclcpp rclcpp_components std_msgs roboy_middleware_msgs})
+ament_target_dependencies(motor_config rclcpp rclcpp_components std_msgs roboy_middleware_msgs})
 #==============================================================================
 # Application
 #==============================================================================
@@ -65,8 +65,15 @@ ament_target_dependencies(common_utilities rclcpp rclcpp_components std_msgs rob
 #        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 #        )
 
+install(TARGETS motor_config
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        )
+
+
 install(TARGETS
-        common_utilities
+        motor_config
         LIBRARY DESTINATION lib/${PROJECT_NAME}
         )
 
@@ -82,5 +89,8 @@ install(DIRECTORY include/${PROJECT_NAME}/
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
         PATTERN ".git" EXCLUDE)
 
-ament_export_libraries(common_utilities)
+ament_export_dependencies(std_msgs rclcpp roboy_middleware_msgs roboy_control_msgs)
+ament_export_include_directories(include)
+ament_export_libraries(motor_config)
+
 ament_package()
