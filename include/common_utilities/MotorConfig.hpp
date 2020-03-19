@@ -29,7 +29,7 @@ public:
         for(int i=0;i<coeffs_displacement2force.size();i++){
             str << coeffs_displacement2force[i] << "\t";
         }
-        ROS_INFO("Motor with global id %d on bus %d with motor_id %d and bus_id %d initialized with polynomial parameters:"
+        ROS_DEBUG("Motor with global id %d on bus %d with motor_id %d and bus_id %d initialized with polynomial parameters:"
                  "%s",motor_id_global, bus, motor_id, bus_id, str.str().c_str());
     };
     int bus, bus_id, motor_id, motor_id_global;
@@ -86,9 +86,9 @@ public:
      * @return force
      */
     double force2displacement(double force, int motor_id_global);
-    int number_of_icebuses = 0, number_of_myobuses = 0, total_number_of_motors = 0;
+    int number_of_icebuses = 0, number_of_armbuses, number_of_myobuses = 0, total_number_of_motors = 0;
     map<int, MotorPtr> motor;
-    map<int, vector<MotorPtr>> icebus, myobus;
+    map<int, vector<MotorPtr>> icebus, armbus;
     map<int, BodyPartPtr> body_part;
 };
 
