@@ -86,7 +86,7 @@ public:
      * @return force
      */
     double force2displacement(double force, int motor_id_global);
-    int number_of_icebuses = 0, number_of_armbuses, number_of_myobuses = 0, total_number_of_motors = 0;
+    int number_of_icebuses = 0, total_number_of_motors = 0;
     map<int, MotorPtr> motor;
     map<int, vector<MotorPtr>> icebus, armbus;
     map<int, BodyPartPtr> body_part;
