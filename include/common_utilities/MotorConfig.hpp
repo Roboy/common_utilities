@@ -14,10 +14,12 @@ using namespace std;
 
 class Motor{
 public:
-    Motor(int bus, int bus_id, int motor_id, int motor_id_global, string muscleType,
+    Motor(int bus, int bus_id, int baudrate, int update_frequency, int motor_id,
+          int motor_id_global, string muscleType,
           vector<float> &coeffs_force2displacement,
           vector<float> &coeffs_displacement2force):
-          bus(bus), bus_id(bus_id), motor_id(motor_id), motor_id_global(motor_id_global),muscleType(muscleType),
+          bus(bus), bus_id(bus_id), baudrate(baudrate), update_frequency(update_frequency),motor_id(motor_id),
+          motor_id_global(motor_id_global),muscleType(muscleType),
           coeffs_force2displacement(coeffs_force2displacement),
           coeffs_displacement2force(coeffs_displacement2force){
         stringstream str;
@@ -32,7 +34,7 @@ public:
         ROS_DEBUG("Motor with global id %d on bus %d with motor_id %d and bus_id %d initialized with polynomial parameters:"
                  "%s",motor_id_global, bus, motor_id, bus_id, str.str().c_str());
     };
-    int bus, bus_id, motor_id, motor_id_global;
+    int bus, bus_id, baudrate, update_frequency, motor_id, motor_id_global;
     uint8_t control_mode = ENCODER0_POSITION;
     vector<float> coeffs_force2displacement;
     vector<float> coeffs_displacement2force;

@@ -9,6 +9,8 @@ bool MotorConfig::readConfig(const string &filepath){
     vector<int> number_of_motors = config["icebus"]["number_of_motors"].as<vector<int>>();
     number_of_icebuses = number_of_motors.size();
     vector<vector<int>> bus_ids = config["icebus"]["bus_ids"].as<vector<vector<int>>>();
+    vector<vector<int>> baudrate = config["icebus"]["baudrate"].as<vector<vector<int>>>();
+    vector<int> update_frequency = config["icebus"]["update_frequency"].as<vector<int>>();
     vector<vector<int>> motor_ids = config["icebus"]["motor_ids"].as<vector<vector<int>>>();
     vector<vector<int>> motor_ids_global = config["icebus"]["motor_ids_global"].as<vector<vector<int>>>();
     vector<vector<string>> muscleType = config["icebus"]["muscle_type"].as<vector<vector<string>>>();
@@ -19,39 +21,44 @@ bool MotorConfig::readConfig(const string &filepath){
       return false;
     }else{
       ROS_INFO("configuring %d icebuses",number_of_icebuses);
-      // for(int i=0;i<number_of_icebuses;i++){
-      //     char str[20];
-      //     sprintf(str,"icebus_%d",i);
-      //
-      //     if(motor_ids.size()>number_of_motors){
-      //         ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-      //         motor_ids.resize(number_of_motors);
-      //     }
-      //     if(bus_ids.size()>number_of_motors){
-      //         ROS_ERROR("bus_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-      //         bus_ids.resize(number_of_motors);
-      //     }
-      //     if(motor_ids_global.size()>number_of_motors){
-      //         ROS_ERROR("motor_ids_global of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-      //         motor_ids_global.resize(number_of_motors);
-      //     }
-      //     if(coeffs_force2displacement.size()>number_of_motors){
-      //         ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-      //         coeffs_force2displacement.resize(number_of_motors);
-      //     }
-      //     if(coeffs_displacement2force.size()>number_of_motors){
-      //         ROS_ERROR("coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-      //         coeffs_displacement2force.resize(number_of_motors);
-      //     }
-      //     for(int m=0;m<number_of_motors;m++){
-      //         MotorPtr motor_ = MotorPtr(new Motor(i,bus_ids[m],motor_ids[m],motor_ids_global[m],muscleType[m],
-      //                 coeffs_force2displacement[m],
-      //                                    coeffs_displacement2force[m]));
-      //         motor[motor_ids_global[m]] = motor_;
-      //         icebus[i].push_back(motor_);
-      //     }
-      //     total_number_of_motors += number_of_motors;
-      // }
+      for(int i=0;i<number_of_icebuses;i++){
+          ROS_INFO("configuring icebus %d with %d motors",i,number_of_motors[i]);
+          if(motor_ids[i].size()>number_of_motors[i]){
+              ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              motor_ids[i].resize(number_of_motors[i]);
+          }
+          if(bus_ids[i].size()>number_of_motors[i]){
+              ROS_ERROR("bus_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              bus_ids[i].resize(number_of_motors[i]);
+          }
+          if(baudrate[i].size()>number_of_motors[i]){
+              ROS_ERROR("baudrate of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              baudrate[i].resize(number_of_motors[i]);
+          }
+          if(motor_ids_global.size()>number_of_motors[i]){
+              ROS_ERROR("motor_ids_global of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              motor_ids_global[i].resize(number_of_motors[i]);
+          }
+          if(coeffs_force2displacement.size()!=number_of_motors[i]){
+              ROS_WARN("coeffs_force2displacement not implemented");
+              // ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              coeffs_force2displacement.resize(number_of_motors[i]);
+          }
+          if(coeffs_displacement2force.size()!=number_of_motors[i]){
+              ROS_WARN("coeffs_displacement2force not implemented");
+              // ROS_ERROR("coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              coeffs_displacement2force.resize(number_of_motors[i]);
+          }
+          for(int m=0;m<number_of_motors[i];m++){
+              MotorPtr motor_ = MotorPtr(
+                  new Motor(i,bus_ids[i][m],baudrate[i][m],update_frequency[i],
+                      motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
+                      coeffs_force2displacement[m], coeffs_displacement2force[m]));
+              motor[motor_ids_global[i][m]] = motor_;
+              icebus[i].push_back(motor_);
+          }
+          total_number_of_motors += number_of_motors[i];
+      }
     }
 
     vector<string> body_parts = config["body_part"]["name"].as<vector<string>>();
