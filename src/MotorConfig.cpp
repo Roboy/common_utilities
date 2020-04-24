@@ -17,7 +17,7 @@ bool MotorConfig::readConfig(const string &filepath){
     vector<vector<float>> coeffs_force2displacement = config["icebus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
     vector<vector<float>> coeffs_displacement2force = config["icebus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
     if(number_of_icebuses==0){
-      ROS_WARN("no motors defined, check motor_config yaml file");
+      ROS_WARN("no motors defined for icebus, check motor_config yaml file");
       return false;
     }else{
       ROS_INFO("configuring %d icebuses",number_of_icebuses);
@@ -54,8 +54,57 @@ bool MotorConfig::readConfig(const string &filepath){
                   new Motor(i,bus_ids[i][m],baudrate[i][m],update_frequency[i],
                       motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
                       coeffs_force2displacement[m], coeffs_displacement2force[m]));
+              if(motor.find(motor_ids_global[i][m])!=motor.end())
+                ROS_FATAL("motor with global id %d already defined, check you motor config yaml");
               motor[motor_ids_global[i][m]] = motor_;
               icebus[i].push_back(motor_);
+          }
+          total_number_of_motors += number_of_motors[i];
+      }
+    }
+
+    number_of_motors = config["myobus"]["number_of_motors"].as<vector<int>>();
+    number_of_myobuses = number_of_motors.size();
+    update_frequency = config["myobus"]["update_frequency"].as<vector<int>>();
+    motor_ids = config["myobus"]["motor_ids"].as<vector<vector<int>>>();
+    motor_ids_global = config["myobus"]["motor_ids_global"].as<vector<vector<int>>>();
+    muscleType = config["myobus"]["muscle_type"].as<vector<vector<string>>>();
+    coeffs_force2displacement = config["myobus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
+    coeffs_displacement2force = config["myobus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
+    if(number_of_myobuses==0){
+      ROS_WARN("no motors defined for myobus, check motor_config yaml file");
+      return false;
+    }else{
+      ROS_INFO("configuring %d myobuses",number_of_myobuses);
+      for(int i=0;i<number_of_myobuses;i++){
+          ROS_INFO("configuring myobus %d with %d motors",i,number_of_motors[i]);
+          if(motor_ids[i].size()>number_of_motors[i]){
+              ROS_ERROR("motor_ids of myobus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              motor_ids[i].resize(number_of_motors[i]);
+          }
+          if(motor_ids_global.size()>number_of_motors[i]){
+              ROS_ERROR("motor_ids_global of myobus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              motor_ids_global[i].resize(number_of_motors[i]);
+          }
+          if(coeffs_force2displacement.size()!=number_of_motors[i]){
+              ROS_WARN("coeffs_force2displacement not implemented");
+              // ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              coeffs_force2displacement.resize(number_of_motors[i]);
+          }
+          if(coeffs_displacement2force.size()!=number_of_motors[i]){
+              ROS_WARN("coeffs_displacement2force not implemented");
+              // ROS_ERROR("coeffs_displacement2force of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
+              coeffs_displacement2force.resize(number_of_motors[i]);
+          }
+          for(int m=0;m<number_of_motors[i];m++){
+              MotorPtr motor_ = MotorPtr(
+                  new Motor(i,m,0,update_frequency[i],
+                      motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
+                      coeffs_force2displacement[m], coeffs_displacement2force[m]));
+              if(motor.find(motor_ids_global[i][m])!=motor.end())
+                ROS_FATAL("motor with global id %d already defined, check you motor config yaml");
+              motor[motor_ids_global[i][m]] = motor_;
+              myobus[i].push_back(motor_);
           }
           total_number_of_motors += number_of_motors[i];
       }
