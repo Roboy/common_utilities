@@ -40,8 +40,8 @@ ament_target_dependencies(motor_config rclcpp rclcpp_components std_msgs roboy_m
 #==============================================================================
 # Application
 #==============================================================================
-#add_library(UDPSocket src/UDPSocket.cpp)
-#target_link_libraries( UDPSocket ${catkin_LIBRARIES}  )
+add_library(UDPSocket src/UDPSocket.cpp)
+ament_target_dependencies( UDPSocket rclcpp  )
 #
 #add_executable( ROS_MASTER_URI_broadcaster src/ROS_MASTER_URI_broadcaster.cpp)
 #target_link_libraries( ROS_MASTER_URI_broadcaster ${catkin_LIBRARIES} UDPSocket )
