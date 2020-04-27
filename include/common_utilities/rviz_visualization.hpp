@@ -1,20 +1,21 @@
 #pragma once
 
-#include <ros/ros.h>
-#include <ros/package.h>
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+#include <rclcpp/rclcpp.hpp>
+//#include <ros/package.h>
+#include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <tf/tf.h>
-#include <tf/transform_listener.h>
-#include <tf/transform_broadcaster.h>
-#include <tf_conversions/tf_eigen.h>
-#include <interactive_markers/menu_handler.h>
-#include <interactive_markers/interactive_marker_server.h>
-#include <geometry_msgs/Pose.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_eigen/tf2_eigen.h>
+//#include <tf_conversions/tf_eigen.h>
+#include <interactive_markers/menu_handler.hpp>
+#include <interactive_markers/interactive_marker_server.hpp>
+#include <geometry_msgs/msg/pose.h>
 #include <string>
 #include <sys/stat.h>
+#include <boost/bind.hpp>
 
 using namespace Eigen;
 
@@ -28,7 +29,7 @@ struct COLOR {
     float r, g, b, a;
 };
 
-using namespace visualization_msgs;
+using namespace visualization_msgs::msg;
 using std::string;
 
 class rviz_visualization {
@@ -37,7 +38,7 @@ public:
 
     ~rviz_visualization();
 
-    static void processFeedback(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback);
+    void processFeedback(const InteractiveMarkerFeedback::ConstPtr &feedback);
 
     void initializeInteractiveMarkerServer();
 
@@ -45,16 +46,16 @@ public:
 
     InteractiveMarkerControl &makeBoxControl(InteractiveMarker &msg);
 
-    void make6DofMarker(bool fixed, unsigned int interaction_mode, const tf::Vector3 &position,
+    void make6DofMarker(bool fixed, unsigned int interaction_mode, const tf2::Vector3 &position,
                         bool show_6dof, double scale = 1, const char *frame = "world",
                         const char *name = "interactive_marker",
                         const char *description = "for interaction and shit");
 
-    Vector3d convertGeometryToEigen(const geometry_msgs::Vector3 &vector_in);
+    Vector3d convertGeometryToEigen(const geometry_msgs::msg::Vector3 &vector_in);
 
-    geometry_msgs::Vector3 convertEigenToGeometry(const Vector3d &vector_in);
+    geometry_msgs::msg::Vector3 convertEigenToGeometry(const Vector3d &vector_in);
 
-    void PoseMsgToTF(const geometry_msgs::Pose &msg, tf::Transform &bt);
+    void PoseMsgToTF(const geometry_msgs::msg::Pose &msg, tf2::Transform &bt);
 
     /**
      * Publishes a mesh visualization marker
@@ -88,7 +89,7 @@ public:
      * @param duration in seconds
      * @param color of the mesh
      */
-    void publishMesh(const char *package, const char *relative_path, const char *modelname, geometry_msgs::Pose &pose,
+    void publishMesh(const char *package, const char *relative_path, const char *modelname, geometry_msgs::msg::Pose &pose,
                      double scale, const char *frame, const char *ns, int message_id, double duration = 0,
                      COLOR color = COLOR(1, 1, 1, 1), bool update = false);
 
@@ -114,7 +115,7 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishSphere(geometry_msgs::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
+    void publishSphere(geometry_msgs::msg::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
                        float radius = 0.01, double duration = 0);
 
     /**
@@ -139,7 +140,7 @@ public:
      * @param rgda rgb color (0-1) plus transparancy
      * @param duration for this duration in seconds (0=forever)
      */
-    void publishCube(geometry_msgs::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
+    void publishCube(geometry_msgs::msg::Pose &pose, const char *frame, const char *ns, int message_id, COLOR color,
                      float radius = 0.01, double duration = 0);
 
     /**
@@ -215,7 +216,7 @@ public:
      * @param transform will be filled with the transform
      * @return success
      */
-    bool getTransform(string from, string to, geometry_msgs::Pose &transform);
+    bool getTransform(string from, string to, geometry_msgs::msg::Pose &transform);
 
     /**
      * Gets a tf transform
@@ -251,7 +252,7 @@ public:
      * @param transform the transform if available
      * @return true if available
      */
-    bool getTransform(const char *from, const char *to, tf::Transform &transform);
+    bool getTransform(const char *from, const char *to, tf2::Transform &transform);
 
     /**
      * Publishes a tf transform
@@ -260,18 +261,20 @@ public:
      * @param transform
      * @return success
      */
-    bool publishTransform(string from, string to, geometry_msgs::Pose &transform);
+    bool publishTransform(string from, string to, geometry_msgs::msg::Pose &transform);
 
 private:
-    ros::NodeHandlePtr nh;
-    static boost::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
+    rclcpp::Node::SharedPtr nh;
+    static std::shared_ptr<interactive_markers::InteractiveMarkerServer> interactive_marker_server;
     static interactive_markers::MenuHandler menu_handler;
     static bool first;
-    visualization_msgs::MarkerArray marker_array;
-    tf::TransformListener listener;
-    tf::TransformBroadcaster broadcaster;
+    MarkerArray marker_array;
+    std::shared_ptr<tf2_ros::Buffer> tfBuffer;
+    std::shared_ptr<tf2_ros::TransformListener> listener;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster;
 public:
-    ros::Publisher visualization_pub, visualization_array_pub;
+    rclcpp::Publisher<Marker>::SharedPtr visualization_pub;
+    rclcpp::Publisher<MarkerArray>::SharedPtr visualization_array_pub;
     bool publish_as_marker_array = false;
     int number_of_markers_to_publish_at_once = 100;
 };

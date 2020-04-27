@@ -16,8 +16,11 @@ SET(CMAKE_BUILD_TYPE Debug)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(std_msgs  REQUIRED)
 find_package(roboy_middleware_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 find_package(eigen3_cmake_module)
 find_package(Eigen3)
@@ -33,7 +36,7 @@ ament_export_dependencies(rosidl_default_runtime)
 
 add_library(motor_config SHARED src/MotorConfig.cpp) # include/common_utilities/MotorConfig.hpp include/common_utilities/CommonDefinitions.h)
 #target_compile_definitions(motor_config)
-ament_target_dependencies(motor_config rclcpp rclcpp_components std_msgs roboy_middleware_msgs})
+ament_target_dependencies(motor_config rclcpp rclcpp_components std_msgs roboy_middleware_msgs)
 #==============================================================================
 # Application
 #==============================================================================
@@ -46,8 +49,8 @@ ament_target_dependencies(motor_config rclcpp rclcpp_components std_msgs roboy_m
 #add_executable( ROS_MASTER_URI_receiver src/ROS_MASTER_URI_receiver.cpp)
 #target_link_libraries( ROS_MASTER_URI_receiver ${catkin_LIBRARIES} UDPSocket )
 
-#add_library( rviz_visualization src/rviz_visualization.cpp )
-#target_link_libraries( rviz_visualization ${catkin_LIBRARIES} )
+add_library( rviz_visualization src/rviz_visualization.cpp )
+ament_target_dependencies( rviz_visualization rclcpp tf2_ros visualization_msgs)
 
 #add_library( MotorConfig src/MotorConfig.cpp )
 #add_dependencies( MotorConfig roboy_middleware_msgs_gencpp)
@@ -89,7 +92,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
         PATTERN ".git" EXCLUDE)
 
-ament_export_dependencies(std_msgs rclcpp roboy_middleware_msgs roboy_control_msgs)
+ament_export_dependencies(std_msgs rclcpp roboy_middleware_msgs)
 ament_export_include_directories(include)
 ament_export_libraries(motor_config)
 
