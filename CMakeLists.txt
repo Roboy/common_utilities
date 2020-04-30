@@ -21,6 +21,7 @@ find_package(std_msgs  REQUIRED)
 find_package(roboy_middleware_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(interactive_markers REQUIRED)
 
 find_package(eigen3_cmake_module)
 find_package(Eigen3)
@@ -35,12 +36,13 @@ ament_export_include_directories(include)
 ament_export_dependencies(rosidl_default_runtime)
 
 add_library(motor_config SHARED src/MotorConfig.cpp) # include/common_utilities/MotorConfig.hpp include/common_utilities/CommonDefinitions.h)
+target_link_libraries(motor_config  ${yaml-cpp_LIBRARIES})
 #target_compile_definitions(motor_config)
 ament_target_dependencies(motor_config rclcpp rclcpp_components std_msgs roboy_middleware_msgs)
 #==============================================================================
 # Application
 #==============================================================================
-add_library(UDPSocket src/UDPSocket.cpp)
+add_library(UDPSocket SHARED src/UDPSocket.cpp)
 ament_target_dependencies( UDPSocket rclcpp  )
 #
 #add_executable( ROS_MASTER_URI_broadcaster src/ROS_MASTER_URI_broadcaster.cpp)
@@ -49,8 +51,8 @@ ament_target_dependencies( UDPSocket rclcpp  )
 #add_executable( ROS_MASTER_URI_receiver src/ROS_MASTER_URI_receiver.cpp)
 #target_link_libraries( ROS_MASTER_URI_receiver ${catkin_LIBRARIES} UDPSocket )
 
-add_library( rviz_visualization src/rviz_visualization.cpp )
-ament_target_dependencies( rviz_visualization rclcpp tf2_ros visualization_msgs)
+add_library( rviz_visualization SHARED src/rviz_visualization.cpp )
+ament_target_dependencies( rviz_visualization rclcpp tf2_ros visualization_msgs interactive_markers)
 
 #add_library( MotorConfig src/MotorConfig.cpp )
 #add_dependencies( MotorConfig roboy_middleware_msgs_gencpp)
@@ -74,9 +76,21 @@ install(TARGETS motor_config
         RUNTIME DESTINATION bin
         )
 
+install(TARGETS rviz_visualization
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        )
+
 
 install(TARGETS
         motor_config
+        LIBRARY DESTINATION lib/${PROJECT_NAME}
+        )
+
+install(TARGETS
+        rviz_visualization
+        UDPSocket
         LIBRARY DESTINATION lib/${PROJECT_NAME}
         )
 
@@ -92,8 +106,8 @@ install(DIRECTORY include/${PROJECT_NAME}/
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
         PATTERN ".git" EXCLUDE)
 
-ament_export_dependencies(std_msgs rclcpp roboy_middleware_msgs)
+ament_export_dependencies(std_msgs rclcpp visualization_msgs interactive_markers roboy_middleware_msgs)
 ament_export_include_directories(include)
-ament_export_libraries(motor_config)
+ament_export_libraries( rviz_visualization) #motor_config
 
 ament_package()
