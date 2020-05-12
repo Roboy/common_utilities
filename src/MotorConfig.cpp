@@ -5,40 +5,58 @@ bool MotorConfig::readConfig(const string &filepath){
         ROS_FATAL_STREAM(filepath << " does not exist, check your path");
         return false;
     }
-    YAML::Node config = YAML::LoadFile(filepath);
-    vector<int> number_of_motors = config["icebus"]["number_of_motors"].as<vector<int>>();
-    number_of_icebuses = number_of_motors.size();
-    vector<vector<int>> bus_ids = config["icebus"]["bus_ids"].as<vector<vector<int>>>();
-    vector<vector<int>> baudrate = config["icebus"]["baudrate"].as<vector<vector<int>>>();
-    vector<int> update_frequency = config["icebus"]["update_frequency"].as<vector<int>>();
-    vector<vector<int>> motor_ids = config["icebus"]["motor_ids"].as<vector<vector<int>>>();
-    vector<vector<int>> motor_ids_global = config["icebus"]["motor_ids_global"].as<vector<vector<int>>>();
-    vector<vector<string>> muscleType = config["icebus"]["muscle_type"].as<vector<vector<string>>>();
-    vector<vector<float>> coeffs_force2displacement = config["icebus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
-    vector<vector<float>> coeffs_displacement2force = config["icebus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
+
+    YAML::Node config;
+
+    try{
+      config = YAML::LoadFile(filepath);
+    }catch(std::exception& e){
+      ROS_ERROR_STREAM("yaml read exception in "<< filepath << " : " <<e.what());
+      yaml_error();
+    }
+
+    vector<int> number_of_motors;
+    try{
+      number_of_motors = config["icebus"]["number_of_motors"].as<vector<int>>();
+      number_of_icebuses = number_of_motors.size();
+    }catch(std::exception& e){
+      ROS_ERROR_STREAM("yaml read number_of_motors icebus exception in "<< filepath << " : " <<e.what());
+      yaml_error();
+    }
+
+    vector<vector<int>> bus_ids;
+    vector<vector<int>> baudrate;
+    vector<vector<float>> encoder0_conversion_factor, encoder1_conversion_factor;
+    vector<vector<float>> gearbox_ratio;
+    vector<int> update_frequency;
+    vector<vector<int>> motor_ids;
+    vector<vector<int>> motor_ids_global;
+    vector<vector<string>> muscleType;
+    vector<vector<float>> coeffs_force2displacement;
+    vector<vector<float>> coeffs_displacement2force;
+
+    ROS_INFO("global_id| bus number | motor_id | bus_id");
+
     if(number_of_icebuses==0){
       ROS_WARN("no motors defined for icebus, check motor_config yaml file");
-      return false;
     }else{
-      ROS_INFO("configuring %d icebuses",number_of_icebuses);
+      try{
+        bus_ids = config["icebus"]["bus_ids"].as<vector<vector<int>>>();
+        baudrate = config["icebus"]["baudrate"].as<vector<vector<int>>>();
+        encoder0_conversion_factor = config["icebus"]["encoder0_conversion_factor"].as<vector<vector<float>>>();
+        encoder1_conversion_factor = config["icebus"]["encoder1_conversion_factor"].as<vector<vector<float>>>();
+        update_frequency = config["icebus"]["update_frequency"].as<vector<int>>();
+        motor_ids = config["icebus"]["motor_ids"].as<vector<vector<int>>>();
+        motor_ids_global = config["icebus"]["motor_ids_global"].as<vector<vector<int>>>();
+        muscleType = config["icebus"]["muscle_type"].as<vector<vector<string>>>();
+        coeffs_force2displacement = config["icebus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
+        coeffs_displacement2force = config["icebus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
+      }catch(std::exception& e){
+        ROS_ERROR_STREAM("yaml read icebus exception in "<< filepath << " : " <<e.what());
+        yaml_error();
+      }
       for(int i=0;i<number_of_icebuses;i++){
           ROS_INFO("configuring icebus %d with %d motors",i,number_of_motors[i]);
-          if(motor_ids[i].size()>number_of_motors[i]){
-              ROS_ERROR("motor_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-              motor_ids[i].resize(number_of_motors[i]);
-          }
-          if(bus_ids[i].size()>number_of_motors[i]){
-              ROS_ERROR("bus_ids of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-              bus_ids[i].resize(number_of_motors[i]);
-          }
-          if(baudrate[i].size()>number_of_motors[i]){
-              ROS_ERROR("baudrate of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-              baudrate[i].resize(number_of_motors[i]);
-          }
-          if(motor_ids_global.size()>number_of_motors[i]){
-              ROS_ERROR("motor_ids_global of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-              motor_ids_global[i].resize(number_of_motors[i]);
-          }
           if(coeffs_force2displacement.size()!=number_of_motors[i]){
               ROS_WARN("coeffs_force2displacement not implemented");
               // ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
@@ -53,39 +71,44 @@ bool MotorConfig::readConfig(const string &filepath){
               MotorPtr motor_ = MotorPtr(
                   new Motor(i,bus_ids[i][m],baudrate[i][m],update_frequency[i],
                       motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
+                      encoder0_conversion_factor[i][m],encoder1_conversion_factor[i][m],
                       coeffs_force2displacement[m], coeffs_displacement2force[m]));
-              if(motor.find(motor_ids_global[i][m])!=motor.end())
-                ROS_FATAL("motor with global id %d already defined, check you motor config yaml");
+              if(motor.find(motor_ids_global[i][m])!=motor.end()){
+                ROS_FATAL("motor with global id %d already defined, check you motor config yaml",motor_ids_global[i][m]);
+                return false;
+              }
               motor[motor_ids_global[i][m]] = motor_;
               icebus[i].push_back(motor_);
           }
           total_number_of_motors += number_of_motors[i];
       }
     }
-
-    number_of_motors = config["myobus"]["number_of_motors"].as<vector<int>>();
+    try{
+      number_of_motors = config["myobus"]["number_of_motors"].as<vector<int>>();
+    }catch(std::exception& e){
+      ROS_ERROR_STREAM("yaml read number_of_motors myobus exception in "<< filepath << " : " <<e.what());
+      yaml_error();
+    }
     number_of_myobuses = number_of_motors.size();
-    update_frequency = config["myobus"]["update_frequency"].as<vector<int>>();
-    motor_ids = config["myobus"]["motor_ids"].as<vector<vector<int>>>();
-    motor_ids_global = config["myobus"]["motor_ids_global"].as<vector<vector<int>>>();
-    muscleType = config["myobus"]["muscle_type"].as<vector<vector<string>>>();
-    coeffs_force2displacement = config["myobus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
-    coeffs_displacement2force = config["myobus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
     if(number_of_myobuses==0){
       ROS_WARN("no motors defined for myobus, check motor_config yaml file");
-      return false;
     }else{
-      ROS_INFO("configuring %d myobuses",number_of_myobuses);
+      try{
+        update_frequency = config["myobus"]["update_frequency"].as<vector<int>>();
+        encoder0_conversion_factor = config["myobus"]["encoder0_conversion_factor"].as<vector<vector<float>>>();
+        encoder1_conversion_factor = config["myobus"]["encoder1_conversion_factor"].as<vector<vector<float>>>();
+        motor_ids = config["myobus"]["motor_ids"].as<vector<vector<int>>>();
+        motor_ids_global = config["myobus"]["motor_ids_global"].as<vector<vector<int>>>();
+        muscleType = config["myobus"]["muscle_type"].as<vector<vector<string>>>();
+        coeffs_force2displacement = config["myobus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
+        coeffs_displacement2force = config["myobus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
+      }catch(std::exception& e){
+        ROS_ERROR_STREAM("yaml read exception in "<< filepath << " : " <<e.what());
+        yaml_error();
+      }
+
       for(int i=0;i<number_of_myobuses;i++){
           ROS_INFO("configuring myobus %d with %d motors",i,number_of_motors[i]);
-          if(motor_ids[i].size()>number_of_motors[i]){
-              ROS_ERROR("motor_ids of myobus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-              motor_ids[i].resize(number_of_motors[i]);
-          }
-          if(motor_ids_global.size()>number_of_motors[i]){
-              ROS_ERROR("motor_ids_global of myobus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
-              motor_ids_global[i].resize(number_of_motors[i]);
-          }
           if(coeffs_force2displacement.size()!=number_of_motors[i]){
               ROS_WARN("coeffs_force2displacement not implemented");
               // ROS_ERROR("coeffs_force2displacement of icebus %d does not match number_of_motors, check your motor config file, adjusting to number_of_motors parameter and continue",i);
@@ -100,9 +123,12 @@ bool MotorConfig::readConfig(const string &filepath){
               MotorPtr motor_ = MotorPtr(
                   new Motor(i,m,0,update_frequency[i],
                       motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
+                      encoder0_conversion_factor[i][m],encoder1_conversion_factor[i][m],
                       coeffs_force2displacement[m], coeffs_displacement2force[m]));
-              if(motor.find(motor_ids_global[i][m])!=motor.end())
-                ROS_FATAL("motor with global id %d already defined, check you motor config yaml");
+              if(motor.find(motor_ids_global[i][m])!=motor.end()){
+                ROS_FATAL("motor with global id %d already defined, check you motor config yaml",motor_ids_global[i][m]);
+                return false;
+              }
               motor[motor_ids_global[i][m]] = motor_;
               myobus[i].push_back(motor_);
           }
@@ -203,4 +229,12 @@ double MotorConfig::force2displacement(double force, int motor_id_global){
         displacement += motor[motor_id_global]->coeffs_force2displacement[i] * pow(force, (double) i);
     }
     return displacement;
+}
+
+void MotorConfig::yaml_error(){
+  std::ofstream out("example_motor_config.yaml");
+  out << example_motor_config << endl;
+  out.close();
+  ROS_WARN("hm seems like something went wrong reading your motor_config file, please use the generated example_motor_config.yaml as a reference");
+
 }
