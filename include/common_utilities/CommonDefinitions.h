@@ -68,7 +68,7 @@ enum CONTROL_MODES{
 
 typedef struct {
     int control_mode = 3;
-    float PWMLimit = 250; /*!< maximum control output in the positive direction in counts, max 1000000*/
+    float PWMLimit = 25; /*!< maximum pwm output in percent*/
     float Kp = 4;/*!<Gain of the proportional component*/
     float Ki = 0;/*!<Gain of the integral component*/
     float Kd = 0;/*!<Gain of the differential component*/
