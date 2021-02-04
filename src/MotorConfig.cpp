@@ -15,6 +15,7 @@ bool MotorConfig::readConfig(const string &filepath){
       yaml_error();
     }
 
+    auto robot_name = config["robot"];
     vector<int> number_of_motors;
     try{
       number_of_motors = config["icebus"]["number_of_motors"].as<vector<int>>();
@@ -34,6 +35,7 @@ bool MotorConfig::readConfig(const string &filepath){
     vector<vector<string>> muscleType;
     vector<vector<float>> coeffs_force2displacement;
     vector<vector<float>> coeffs_displacement2force;
+    vector<vector<int>> direction;
 
     ROS_INFO("global_id| bus number | motor_id | bus_id");
 
@@ -45,6 +47,7 @@ bool MotorConfig::readConfig(const string &filepath){
         baudrate = config["icebus"]["baudrate"].as<vector<vector<int>>>();
         encoder0_conversion_factor = config["icebus"]["encoder0_conversion_factor"].as<vector<vector<float>>>();
         encoder1_conversion_factor = config["icebus"]["encoder1_conversion_factor"].as<vector<vector<float>>>();
+        direction = config["icebus"]["spin_direction"].as<vector<vector<int>>>();
         update_frequency = config["icebus"]["update_frequency"].as<vector<int>>();
         motor_ids = config["icebus"]["motor_ids"].as<vector<vector<int>>>();
         motor_ids_global = config["icebus"]["motor_ids_global"].as<vector<vector<int>>>();
@@ -72,6 +75,7 @@ bool MotorConfig::readConfig(const string &filepath){
                   new Motor(i,bus_ids[i][m],baudrate[i][m],update_frequency[i],
                       motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
                       encoder0_conversion_factor[i][m],encoder1_conversion_factor[i][m],
+                      direction[i][m],
                       coeffs_force2displacement[m], coeffs_displacement2force[m]));
               if(motor.find(motor_ids_global[i][m])!=motor.end()){
                 ROS_FATAL("motor with global id %d already defined, check you motor config yaml",motor_ids_global[i][m]);
@@ -97,6 +101,7 @@ bool MotorConfig::readConfig(const string &filepath){
         update_frequency = config["myobus"]["update_frequency"].as<vector<int>>();
         encoder0_conversion_factor = config["myobus"]["encoder0_conversion_factor"].as<vector<vector<float>>>();
         encoder1_conversion_factor = config["myobus"]["encoder1_conversion_factor"].as<vector<vector<float>>>();
+        direction = config["myobus"]["spin_direction"].as<vector<vector<int>>>();
         motor_ids = config["myobus"]["motor_ids"].as<vector<vector<int>>>();
         motor_ids_global = config["myobus"]["motor_ids_global"].as<vector<vector<int>>>();
         muscleType = config["myobus"]["muscle_type"].as<vector<vector<string>>>();
@@ -124,6 +129,7 @@ bool MotorConfig::readConfig(const string &filepath){
                   new Motor(i,m,0,update_frequency[i],
                       motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
                       encoder0_conversion_factor[i][m],encoder1_conversion_factor[i][m],
+                      direction[i][m],
                       coeffs_force2displacement[m], coeffs_displacement2force[m]));
               if(motor.find(motor_ids_global[i][m])!=motor.end()){
                 ROS_FATAL("motor with global id %d already defined, check you motor config yaml",motor_ids_global[i][m]);

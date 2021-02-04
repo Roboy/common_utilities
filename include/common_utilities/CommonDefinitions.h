@@ -68,12 +68,12 @@ enum CONTROL_MODES{
 
 typedef struct {
     int control_mode = 3;
-    float PWMLimit = 25; /*!< maximum pwm output in percent*/
-    float Kp = 4;/*!<Gain of the proportional component*/
-    float Ki = 0;/*!<Gain of the integral component*/
-    float Kd = 0;/*!<Gain of the differential component*/
-    float deadband = 0;/*!<Optional deadband threshold for the control response*/
-    float IntegralLimit = 25; /*!<Integral maximum*/
+    float PWMLimit = 25.0; /*!< maximum pwm output in percent*/
+    int32_t Kp = 4;/*!<Gain of the proportional component*/
+    int32_t Ki = 0;/*!<Gain of the integral component*/
+    int32_t Kd = 0;/*!<Gain of the differential component*/
+    int32_t deadband = 0;/*!<Optional deadband threshold for the control response*/
+    int32_t IntegralLimit = 25; /*!<Integral maximum*/
 } control_Parameters_t;
 
 [[deprecated("will be obsoulted by icebus")]]

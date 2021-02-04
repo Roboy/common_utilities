@@ -18,13 +18,15 @@ public:
           int motor_id_global, string muscleType,
           float encoder0_conversion_factor,
           float encoder1_conversion_factor,
+          int direction,
           vector<float> &coeffs_force2displacement,
           vector<float> &coeffs_displacement2force):
           bus(bus), bus_id(bus_id), baudrate(baudrate), update_frequency(update_frequency),motor_id(motor_id),
           motor_id_global(motor_id_global),muscleType(muscleType),encoder0_conversion_factor(encoder0_conversion_factor),
           encoder1_conversion_factor(encoder1_conversion_factor),
           coeffs_force2displacement(coeffs_force2displacement),
-          coeffs_displacement2force(coeffs_displacement2force){
+          coeffs_displacement2force(coeffs_displacement2force), direction(direction)
+          {
         stringstream str;
         str << "force -> displacement" << "\t ";
         for(int i=0;i<coeffs_force2displacement.size();i++){
@@ -34,13 +36,15 @@ public:
         for(int i=0;i<coeffs_displacement2force.size();i++){
             str << coeffs_displacement2force[i] << "\t";
         }
+        is_on = false;
         ROS_INFO("%d \t |  %d \t |   %d \t | %d",motor_id_global, bus, motor_id, bus_id);
     };
-    int bus, bus_id, baudrate, update_frequency, motor_id, motor_id_global;
+    int bus, bus_id, baudrate, update_frequency, motor_id, motor_id_global, direction;
     float encoder0_conversion_factor, encoder1_conversion_factor;
     uint8_t control_mode = ENCODER0_POSITION;
     vector<float> coeffs_force2displacement;
     vector<float> coeffs_displacement2force;
+    bool is_on;
     string muscleType;
 };
 
