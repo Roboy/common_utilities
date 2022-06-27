@@ -45,7 +45,7 @@ public:
     vector<float> coeffs_force2displacement;
     vector<float> coeffs_displacement2force;
     bool is_on;
-    string muscleType;
+    string muscleType, bus_socket_name;
 };
 
 typedef boost::shared_ptr<Motor> MotorPtr;
@@ -95,10 +95,11 @@ public:
      * @return force
      */
     double force2displacement(double force, int motor_id_global);
-    int number_of_icebuses = 0, number_of_myobuses = 0, total_number_of_motors = 0;
+    int number_of_icebuses = 0, number_of_myobuses = 0, number_of_canbuses = 0, total_number_of_motors = 0;
     map<int, MotorPtr> motor;
-    map<int, vector<MotorPtr>> icebus, armbus, myobus;
+    map<int, vector<MotorPtr>> icebus, armbus, myobus, canbus;
     map<int, BodyPartPtr> body_part;
+    
 private:
     void yaml_error();
 };

@@ -142,6 +142,58 @@ bool MotorConfig::readConfig(const string &filepath){
       }
     }
 
+    // read can bus from yaml file
+    try{
+      number_of_motors = config["canbus"]["number_of_motors"].as<vector<int>>();
+    }catch(std::exception& e){
+      ROS_ERROR_STREAM("yaml read number_of_motors myobus exception in "<< filepath << " : " <<e.what());
+      yaml_error();
+    }
+    vector<string> bus_socket_name;
+    number_of_canbuses = number_of_motors.size();
+    if(number_of_canbuses==0){
+      ROS_WARN("no motors defined for CAN-Bus, check motor_config yaml file");
+    }else{
+      try{
+        update_frequency = config["canbus"]["update_frequency"].as<vector<int>>();
+        encoder0_conversion_factor = config["canbus"]["encoder_conversion_factor"].as<vector<vector<float>>>();
+        direction = config["canbus"]["spin_direction"].as<vector<vector<int>>>();
+        motor_ids = config["canbus"]["motor_ids"].as<vector<vector<int>>>();
+        motor_ids_global = config["canbus"]["motor_ids_global"].as<vector<vector<int>>>();
+        muscleType = config["canbus"]["muscle_type"].as<vector<vector<string>>>();
+        bus_ids = config["canbus"]["bus_ids"].as<vector<vector<int>>>();
+        bus_socket_name = config["canbus"]["bus_socket_name"].as<vector<string>>();
+        coeffs_force2displacement = config["canbus"]["coeffs_force2displacement"].as<vector<vector<float>>>();
+        coeffs_displacement2force = config["canbus"]["coeffs_displacement2force"].as<vector<vector<float>>>();
+      }catch(std::exception& e){
+        ROS_ERROR_STREAM("yaml read exception in "<< filepath << " : " <<e.what());
+        yaml_error();
+      }
+
+      for(int i=0;i<number_of_canbuses;i++){
+        if(number_of_motors[i] <= 0){
+          ROS_ERROR_STREAM("A can bus has no motors!");
+          yaml_error();
+        }
+          for(int m=0;m<number_of_motors[i];m++){
+                MotorPtr motor_ = MotorPtr(
+                new Motor(i,bus_ids[i][m],0,update_frequency[i],
+                      motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
+                      encoder0_conversion_factor[i][m],0,
+                      direction[i][m],
+                      coeffs_force2displacement[m], coeffs_displacement2force[m]));
+                motor_->bus_socket_name = bus_socket_name[i];
+              if(motor.find(motor_ids_global[i][m])!= motor.end() ){
+                ROS_FATAL("motor with global id %d already defined, check you motor config yaml",motor_ids_global[i][m]);
+                return false;
+              }
+              motor[motor_ids_global[i][m]] = motor_;
+              canbus[i].push_back(motor_);
+          }
+          total_number_of_motors += number_of_motors[i];
+      }
+    }
+
     vector<string> body_parts = config["body_part"]["name"].as<vector<string>>();
     vector<vector<int>> body_part_motor_ids_global = config["body_part"]["motor_ids_global"].as<vector<vector<int>>>();
     for(int i=0;i<body_parts.size();i++){

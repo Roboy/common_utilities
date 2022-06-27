@@ -54,6 +54,9 @@
 #define springEncoderTicksPerMeter(meter) (10*1000*meter)
 #define springMeterPerEncoderTicks(encoderTicks) (encoderTicks/(10*1000))
 
+#define OUTSIDE_CAN_COMMAND 0
+#define CAN_CONTROLLER_USED_STATUS 1
+
 enum ENCODERS{
     ENCODER0,
     ENCODER1
