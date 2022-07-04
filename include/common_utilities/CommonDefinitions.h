@@ -54,6 +54,7 @@
 #define springEncoderTicksPerMeter(meter) (10*1000*meter)
 #define springMeterPerEncoderTicks(encoderTicks) (encoderTicks/(10*1000))
 
+// definition for used can sockets 
 #define OUTSIDE_CAN_COMMAND 0
 #define CAN_CONTROLLER_USED_STATUS 1
 
