@@ -179,7 +179,7 @@ bool MotorConfig::readConfig(const string &filepath){
                 MotorPtr motor_ = MotorPtr(
                 new Motor(i,bus_ids[i][m],0,update_frequency[i],
                       motor_ids[i][m],motor_ids_global[i][m],muscleType[i][m],
-                      encoder0_conversion_factor[i][m],0,
+                      encoder0_conversion_factor[i][m],1,
                       direction[i][m],
                       coeffs_force2displacement[m], coeffs_displacement2force[m]));
                 motor_->bus_socket_name = bus_socket_name[i];
