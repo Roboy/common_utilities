@@ -1,0 +1,7 @@
+<launch>
+  <!-- Start rosserial node for /dev/ttyUSB0 -->
+  <node pkg="rosserial_python" type="node.py" name="rosserial_node_usb0" output="screen" args="/dev/ttyUSB0 _baud:=115200" respawn="true"/>
+
+  <!-- Start rosserial node for /dev/ttyUSB1 -->
+  <!--<node pkg="rosserial_python" type="node.py" name="rosserial_node_usb1" output="screen" args="/dev/ttyUSB1 _baud:=57600" respawn="true" />-->
+</launch>
